@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import statue from '../assets/statue.png';
 import AddToChrome from '../components/AddToChrome.astro';
 import Brand from '../components/Brand.astro';
+import OpenSource from '../components/OpenSource.astro';
 
 // The screens read like an ad, top to bottom: the hook (intro), what's at stake, how zandr
 // protects you, why you can trust it, and the call to action (install the extension).
@@ -64,6 +65,7 @@ const sections = [{ id: 'intro', label: 'Intro' }, ...features, { id: 'install',
         <p>Zandr checks every transfer and every transaction before you sign, and stops what would cost you your funds.</p>
         <div class="cta">
           <AddToChrome />
+          <OpenSource />
         </div>
       </div>
     </section>
@@ -89,6 +91,7 @@ const sections = [{ id: 'intro', label: 'Intro' }, ...features, { id: 'install',
 
         <div class="cta">
           <AddToChrome />
+          <OpenSource />
         </div>
       </div>
     </section>
@@ -393,7 +396,14 @@ const sections = [{ id: 'intro', label: 'Intro' }, ...features, { id: 'install',
     text-transform: uppercase;
   }
 
+  /* The source right of the install button; on a narrow screen where they don't fit side by side,
+     below it. */
   .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 28px;
     margin-top: 40px;
   }
 

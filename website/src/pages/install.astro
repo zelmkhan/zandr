@@ -4,6 +4,7 @@
 // size, SHA-256) come from `npm run release:site` in the extension's folder.
 import Layout from '../layouts/Layout.astro';
 import Brand from '../components/Brand.astro';
+import OpenSource from '../components/OpenSource.astro';
 import release from '../data/release.json';
 
 const download = `/download/${release.file}`;
@@ -23,12 +24,15 @@ const version = release.version.replace('-', ' ');
         browser by hand. It's the same wallet, and it takes about a minute.
       </p>
 
-      <a class="download" href={download} download>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        Download Zandr
-      </a>
+      <div class="actions">
+        <a class="download" href={download} download>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          Download Zandr
+        </a>
+        <OpenSource />
+      </div>
       <p class="meta">Version {version} · {size} · Chrome, Brave, Edge, Arc</p>
 
       <p class="soon"><span class="dot"></span>Coming to the Chrome Web Store and other stores: one click to install, updates on their own.</p>
@@ -288,13 +292,22 @@ const version = release.version.replace('-', ' ');
     text-wrap: pretty;
   }
 
+  /* The source right of the download; where they don't fit side by side, below it. */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 28px;
+    margin-top: 40px;
+  }
+
   /* The same white pill as the home page's button. */
   .download {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     height: 48px;
-    margin-top: 40px;
     padding: 0 28px 0 22px;
     border-radius: 999px;
     background: #ffffff;
