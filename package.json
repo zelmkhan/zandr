@@ -1,0 +1,38 @@
+{
+  "name": "zandr",
+  "description": "Zandr crypto wallet browser extension",
+  "private": true,
+  "version": "0.0.1-beta",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "release:site": "wxt build && node scripts/release-site.mjs",
+    "exchange-tokens": "node --env-file-if-exists=.env.exchanges --disable-warning=ExperimentalWarning scripts/exchange-tokens.mjs",
+    "exchange-wallets": "node scripts/exchange-wallets.mjs",
+    "check": "wxt prepare && svelte-check --tsconfig ./tsconfig.json && node scripts/check-server.mjs"
+  },
+  "devDependencies": {
+    "@tsconfig/svelte": "5.0.8",
+    "@wxt-dev/module-svelte": "2.0.5",
+    "svelte": "5.57.2",
+    "svelte-check": "4.7.6",
+    "tslib": "2.8.1",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "web-ext": "10.8.0",
+    "wxt": "0.21.4"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "5.3.0",
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "@scure/base": "2.4.0",
+    "@scure/bip39": "2.4.0",
+    "qr": "0.7.2"
+  }
+}

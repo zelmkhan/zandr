@@ -1,0 +1,36 @@
+---
+import '@fontsource-variable/geist/wght.css';
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Zandr',
+  description = 'A Solana wallet designed to protect your funds from threats and from simple human error.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <!-- Fetch the font alongside the stylesheet rather than after it, so the page doesn't first
+         show in a fallback font and then switch while the intro rises. -->
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
+    <!-- The app's mark: black on light tabs, white on dark ones; on a black tile where SVG icons
+         aren't supported. -->
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

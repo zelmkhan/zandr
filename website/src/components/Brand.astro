@@ -1,0 +1,50 @@
+---
+// The name, top left: the mark and "zandr". Pinned to the viewport on the home page's slides;
+// elsewhere it sits at the top of the page and scrolls away with it.
+interface Props {
+  href: string;
+  label: string;
+  pinned?: boolean;
+}
+
+const { href, label, pinned = false } = Astro.props;
+---
+
+<a class:list={['brand', { pinned }]} href={href} aria-label={label}>
+  <img src="/mark.png" alt="" width="22" height="22" />
+  Zandr
+</a>
+
+<style>
+  .brand {
+    position: absolute;
+    top: 26px;
+    left: 32px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--fg);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    text-decoration: none;
+  }
+
+  .pinned {
+    position: fixed;
+  }
+
+  .brand:focus-visible {
+    border-radius: 6px;
+    outline: 2px solid var(--fg);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .brand {
+      top: 20px;
+      left: 20px;
+    }
+  }
+</style>

@@ -1,0 +1,154 @@
+/* Settings-only styles: shared form controls come from assets/ui.css. */
+:root {
+  font-size: 16px;
+  line-height: 1.5;
+  /* The page scrolls by wheel and touch, without a scrollbar, as the wallet does. */
+  scrollbar-width: none;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.section-lead {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* A heading for a further group of rows within a section. */
+.group-title {
+  margin: 36px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.group-lead {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.group-title + .rows,
+.group-lead + .rows {
+  margin-top: 12px;
+}
+
+/* Back link at the top of a page inside a section, e.g. a protection or the password. */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 20px -8px;
+  padding: 6px 10px 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.back:hover {
+  background: rgba(var(--ink), 0.05);
+  color: var(--fg);
+}
+
+.back:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+}
+
+/* A button sized for a row or a form inside a card, not the full-width main action. */
+.button.compact {
+  width: auto;
+  height: 36px;
+  margin: 0;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+/* A small status pill, e.g. "In development". */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+
+/* A card of setting rows: what it is on the left, the control on the right. */
+.rows {
+  margin-top: 24px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 18px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--field-border);
+}
+
+.row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.row-text strong {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.row-text span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.row .segmented {
+  flex: none;
+}
+
+.row .segmented button {
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+/* Rows stack on narrow screens: the control drops under its text. */
+@media (max-width: 560px) {
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .row .switch {
+    align-self: flex-start;
+  }
+}

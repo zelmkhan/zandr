@@ -1,0 +1,36 @@
+/* The wallet view, shown in the popup and in the side panel. Palette and base styles come
+   from assets/theme.css; each entrypoint adds its own frame size. */
+:root {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/*
+ * Geist with custom vertical metrics for the password field. The caret is as tall as
+ * ascent + descent (104% instead of Geist's 130%), and the split puts the caret's center
+ * exactly on the dots, or on the placeholder text while the field is empty, so both
+ * sit dead center in the field with no padding tweaks.
+ */
+@font-face {
+  font-family: 'Geist Password';
+  src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  ascent-override: 82.7%;
+  descent-override: 21.3%;
+}
+
+@font-face {
+  font-family: 'Geist Password Empty';
+  src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  ascent-override: 74.9%;
+  descent-override: 29.1%;
+}
+
+body {
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+}

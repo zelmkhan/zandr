@@ -1,0 +1,124 @@
+/* Palette and base styles shared by every extension page (popup, onboarding). */
+:root {
+  color-scheme: dark;
+
+  /* The ink every tint is mixed from (as r, g, b): warm ivory on black. */
+  --ink: 243, 242, 234;
+  --bg: #000000;
+  /* Warm ivory. */
+  --fg: #f3f2ea;
+  --muted: #7e7d76;
+  --hairline: rgba(var(--ink), 0.09);
+  --hairline-strong: rgba(var(--ink), 0.3);
+  --surface: rgba(var(--ink), 0.035);
+  /* Frameless style: fills for the avatar, round buttons and fields, and faint dividers. */
+  --fill: rgba(var(--ink), 0.08);
+  --fill-strong: rgba(var(--ink), 0.13);
+  --divider: rgba(var(--ink), 0.05);
+  --danger: #f08c7e;
+  --danger-hover: #f4a294;
+  --on-danger: #000000;
+  /* Main action buttons: ivory, brightening to white under the pointer, with black text. */
+  --accent: #f3f2ea;
+  --accent-hover: #ffffff;
+  --on-accent: #000000;
+  /* Price moves: up in a green leaning to blue, down in red. */
+  --up: #26d0a8;
+  --down: #f0575d;
+  /* Warnings short of danger: worth a look, not a stop. */
+  --caution: #f0b35a;
+  /* The badge of a verified token. */
+  --verified: #4c9bff;
+  /* The wallet's notices of warnings and errors, at the bottom of the view. */
+  --notice: #f3953f;
+  --on-notice: #1a1006;
+  /* Surfaces: password fields, menus, the settings sidebar, raised round buttons, inset fields,
+     the veil over a hidden phrase, and shadows. */
+  --input: #0b0b0b;
+  --menu: #0b0b0b;
+  --panel: #070707;
+  --raised: #1d1d1b;
+  --raised-hover: #272725;
+  --inset: rgba(0, 0, 0, 0.35);
+  --veil: rgba(0, 0, 0, 0.5);
+  --shadow: rgba(0, 0, 0, 0.6);
+  /* The soft light falling from the top of the wallet view. */
+  --glow: rgba(var(--ink), 0.075);
+
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The light theme, from Settings → General: near-black ink on white. Tints keep their strength;
+   only what isn't a tint of the ink is set again. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --ink: 20, 20, 19;
+  --bg: #ffffff;
+  --fg: #141413;
+  --muted: #74736d;
+  --hairline: rgba(var(--ink), 0.1);
+  --hairline-strong: rgba(var(--ink), 0.28);
+  --fill: rgba(var(--ink), 0.055);
+  --fill-strong: rgba(var(--ink), 0.09);
+  --divider: rgba(var(--ink), 0.07);
+  --danger: #d0453a;
+  --danger-hover: #b8392f;
+  --on-danger: #ffffff;
+  --accent: #141413;
+  --accent-hover: #2f2f2d;
+  --on-accent: #ffffff;
+  --up: #0b9a78;
+  --down: #e0464c;
+  --caution: #b5741a;
+  --verified: #2f7cf6;
+  --input: #ffffff;
+  --menu: #ffffff;
+  --panel: #f7f7f5;
+  --raised: #ebebe9;
+  --raised-hover: #e0e0de;
+  --inset: rgba(var(--ink), 0.03);
+  --veil: rgba(255, 255, 255, 0.6);
+  --shadow: rgba(0, 0, 0, 0.14);
+  --glow: transparent;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  /* Chrome injects `body { font-family: system-ui; font-size: 75% }` into extension pages;
+     take the font from :root instead. */
+  font: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: rgba(var(--ink), 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}

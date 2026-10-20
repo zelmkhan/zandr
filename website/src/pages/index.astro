@@ -1,0 +1,458 @@
+---
+import { Picture } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import statue from '../assets/statue.png';
+import AddToChrome from '../components/AddToChrome.astro';
+import Brand from '../components/Brand.astro';
+
+// The screens read like an ad, top to bottom: the hook (intro), what's at stake, how zandr
+// protects you, why you can trust it, and the call to action (install the extension).
+// Each title is said in two tones, like the intro's: the point, then the rest of it quieter.
+const features = [
+  {
+    id: 'why',
+    label: 'Why it matters',
+    title: 'There is no undo',
+    quiet: 'on Solana.',
+    text: "A token the exchange doesn't accept. One signature on a malicious transaction. One click on a fake site. Any of them can cost you your funds, for good.",
+  },
+  {
+    id: 'protection',
+    label: 'Mistake protection',
+    title: 'Every action checked',
+    quiet: 'before it happens.',
+    text: "Zandr warns you before you send a token an exchange doesn't accept, catches malicious transactions before you sign, and alerts you before you open or connect to a dangerous site.",
+  },
+  {
+    id: 'security',
+    label: 'Security',
+    title: 'Your keys.',
+    quiet: 'Only yours.',
+    text: 'Your keys are created and kept on your device. We never store them, never see them, and never track how you use your wallet.',
+  },
+];
+
+// One dash per screen, top to bottom.
+const sections = [{ id: 'intro', label: 'Intro' }, ...features, { id: 'install', label: 'Install Zandr' }];
+---
+
+<Layout>
+  <Brand href="#intro" label="Zandr, back to the top" pinned />
+
+  <nav class="dashes" aria-label="Page sections">
+    {sections.map(({ id, label }) => <a href={`#${id}`} aria-label={label} />)}
+  </nav>
+
+  <!-- Decoration: a stone figure seated in the bottom left corner, holding still while the screens
+       change in front of it. -->
+  <Picture
+    src={statue}
+    formats={['avif', 'webp']}
+    widths={[540, 860, 1190]}
+    sizes="(orientation: portrait) 40vh, 76vh"
+    alt=""
+    aria-hidden="true"
+    class="statue"
+    loading="eager"
+    fetchpriority="low"
+  />
+
+  <main>
+    <section id="intro" class="screen intro">
+      <div class="slide">
+        <h1>The wallet that stops mistakes <span class="quiet">before they cost you.</span></h1>
+        <p>Zandr checks every transfer and every transaction before you sign, and stops what would cost you your funds.</p>
+        <div class="cta">
+          <AddToChrome />
+        </div>
+      </div>
+    </section>
+
+    {
+      features.map(({ id, label, title, quiet, text }) => (
+        <section id={id} class="screen">
+          <div class="slide">
+            <p class="label">{label}</p>
+            <h2>
+              {title} <span class="quiet">{quiet}</span>
+            </h2>
+            <p>{text}</p>
+          </div>
+        </section>
+      ))
+    }
+
+    <section id="install" class="screen">
+      <div class="slide">
+        <h2>Safe from attackers. <span class="quiet">Safe from mistakes.</span></h2>
+        <p>Install the extension and protect your funds with Zandr.</p>
+
+        <div class="cta">
+          <AddToChrome />
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  const root = document.documentElement;
+
+  // Hold the intro's rise until the font is in, so the text doesn't switch fonts halfway up.
+  // A slow connection gets a moment, not forever: then it rises in whatever font there is.
+  root.classList.add('waiting');
+  void Promise.race([
+    document.fonts.load('600 1em "Geist Variable"'),
+    new Promise((done) => setTimeout(done, 800)),
+  ]).finally(() => root.classList.remove('waiting'));
+  const sections = [...document.querySelectorAll<HTMLElement>('.screen')];
+  const dashes = [...document.querySelectorAll<HTMLAnchorElement>('.dashes a')];
+
+  function show(current: HTMLElement) {
+    for (const section of sections) section.classList.toggle('current', section === current);
+
+    for (const dash of dashes) {
+      if (dash.hash === `#${current.id}`) dash.setAttribute('aria-current', 'true');
+      else dash.removeAttribute('aria-current');
+    }
+  }
+
+  // Switch the page to slides: the screens become empty scroll stops and their content is
+  // pinned to the middle of the viewport, one screen at a time. Without this script the page
+  // stays a plain scrolling page. The first screen is picked right away, with transitions off,
+  // so the switch itself doesn't animate.
+  const middle = scrollY + innerHeight / 2;
+  root.classList.add('slides', 'instant');
+  show(sections.findLast((section) => section.offsetTop <= middle) ?? sections[0]);
+  void root.offsetWidth; // apply the styles above before transitions come back
+  root.classList.remove('instant');
+
+  // From then on, the current screen is the one crossing the middle of the viewport.
+  const crossing = new Set<Element>();
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) crossing.add(entry.target);
+        else crossing.delete(entry.target);
+      }
+
+      const current = sections.find((section) => crossing.has(section));
+      if (current) show(current);
+    },
+    { rootMargin: '-50% 0px -50% 0px' },
+  );
+
+  for (const section of sections) spy.observe(section);
+
+  // The dashes light up while the page moves and settle back to dim shortly after; also once
+  // on load, so they get noticed.
+  const nav = document.querySelector<HTMLElement>('.dashes')!;
+  let settle: ReturnType<typeof setTimeout> | undefined;
+
+  function wake() {
+    nav.classList.add('awake');
+    clearTimeout(settle);
+    settle = setTimeout(() => nav.classList.remove('awake'), 1500);
+  }
+
+  wake();
+  addEventListener('scroll', wake, { passive: true });
+</script>
+
+<style>
+  /* One screen per viewport, and each scroll gesture moves exactly one screen. */
+  :global(html) {
+    scroll-snap-type: y mandatory;
+  }
+
+  .screen {
+    height: 100vh;
+    height: 100svh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 32px 40px;
+    text-align: center;
+  }
+
+  /*
+   * Slides, switched on by the script: every screen's content sits in the middle of the
+   * viewport and only the current one shows. The old one dissolves in place, then the new
+   * one rises into the same spot block by block, just like the intro on load.
+   */
+  :global(.slides) .slide {
+    position: fixed;
+    inset: 0;
+    height: auto;
+    visibility: hidden;
+    transition: visibility 0s 0.3s;
+  }
+
+  /* Leaving: fade out where it stands, then drop back down out of sight for the next rise. */
+  :global(.slides) .slide > * {
+    opacity: 0;
+    transform: translateY(32px);
+    filter: blur(6px);
+    transition:
+      opacity 0.3s ease,
+      filter 0.3s ease,
+      transform 0s 0.3s;
+  }
+
+  :global(.slides) .current .slide {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* Arriving: the same rise as the intro's, once the old screen has faded. */
+  :global(.slides) .current .slide > * {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition-property: opacity, transform, filter;
+    transition-duration: 0.9s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 0.25s;
+  }
+
+  :global(.slides) .current .slide > :nth-child(2) {
+    transition-delay: 0.37s;
+  }
+
+  :global(.slides) .current .slide > :nth-child(3) {
+    transition-delay: 0.49s;
+  }
+
+  /* On load, the intro rises into place block by block. */
+  @media (prefers-reduced-motion: no-preference) {
+    .intro .slide > * {
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+
+    .intro .slide > :nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .intro .slide > :nth-child(3) {
+      animation-delay: 0.24s;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+      filter: blur(6px);
+    }
+  }
+
+  /* Held at its start while the script waits for the font. */
+  :global(.waiting) .intro .slide > * {
+    animation-play-state: paused;
+  }
+
+  /* Screens swap instantly while the script sets up, and always for reduced motion. */
+  :global(.instant) .slide,
+  :global(.instant) .slide > * {
+    transition: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide,
+    .slide > * {
+      transition: none !important;
+    }
+  }
+
+  /* Light falls on every screen from above. One layer for the whole page, so it holds still
+     while the screens change under it. */
+  main::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(60% 50% at 50% -10%, rgba(243, 242, 234, 0.09), transparent 70%);
+    pointer-events: none;
+  }
+
+  /* The statue: under the light from above, fading out to the right, where the picture is cut
+     off, and into the dark at the bottom. It emerges with the intro. */
+  :global(.statue) {
+    position: fixed;
+    bottom: 0;
+    left: -3vw;
+    z-index: -2;
+    width: auto;
+    max-width: none;
+    height: min(84vh, 940px);
+    height: min(84svh, 940px);
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+    mask-image: linear-gradient(to right, #000 55%, transparent 96%), linear-gradient(to top, transparent, #000 22%);
+    mask-composite: intersect;
+  }
+
+  /* Where the words stay centered (upright screens, and those too square for the words beside
+     the statue), they run across it: the statue is smaller there, and quieter. */
+  @media not all and (min-width: 1000px) and (min-aspect-ratio: 3/2) {
+    :global(.statue) {
+      left: -4vw;
+      height: min(44vh, 100vw);
+      height: min(44svh, 100vw);
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.statue) {
+      animation: emerge 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards;
+    }
+  }
+
+  :global(.waiting) :global(.statue) {
+    animation-play-state: paused;
+  }
+
+  @keyframes emerge {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  /* Headlines in two tones: the point in full white, the rest of the sentence quieter. */
+  h1,
+  h2 {
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  h1 {
+    max-width: 880px;
+    font-size: clamp(40px, 5.6vw, 76px);
+  }
+
+  h2 {
+    max-width: 820px;
+    font-size: clamp(36px, 4.8vw, 64px);
+  }
+
+  .quiet {
+    color: rgba(243, 242, 234, 0.42);
+  }
+
+  p {
+    max-width: 520px;
+    margin: 24px 0 0;
+    color: rgba(243, 242, 234, 0.6);
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /*
+   * Wide screens: the statue on the left, the words on the right, read from their left edge. The
+   * column starts past the statue (its width follows the screen's height: 84% of it, at the
+   * picture's proportions, 3vw off the edge) and never left of the middle. Squarer screens keep
+   * the words centered: there's no room beside the statue there.
+   */
+  @media (min-width: 1000px) and (min-aspect-ratio: 3/2) {
+    .slide {
+      align-items: flex-start;
+      padding-right: 7vw;
+      padding-left: max(46vw, calc(min(84vh, 940px) * 0.9 - 3vw + 40px));
+      text-align: left;
+    }
+
+    h1 {
+      font-size: clamp(40px, 4.4vw, 72px);
+    }
+
+    h2 {
+      font-size: clamp(36px, 3.9vw, 60px);
+    }
+  }
+
+  .label {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cta {
+    margin-top: 40px;
+  }
+
+  /*
+   * Section indicator on the right: one dash per screen, the current one lit. It stays dim
+   * while you read and comes up while you move between screens or point at it.
+   */
+  .dashes {
+    position: fixed;
+    top: 50%;
+    right: 12px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0.4;
+    transform: translateY(-50%);
+    transition: opacity 0.8s var(--ease);
+  }
+
+  .dashes.awake,
+  .dashes:hover,
+  .dashes:focus-within {
+    opacity: 1;
+    transition-duration: 0.2s;
+  }
+
+  /* The link is wider and taller than the dash it draws, for an easier click target. */
+  .dashes a {
+    padding: 4px 14px;
+    border-radius: 6px;
+  }
+
+  .dashes a::before {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 16px;
+    border-radius: 1px;
+    background: rgba(243, 242, 234, 0.16);
+    transition: background-color 0.3s;
+  }
+
+  .dashes a:hover::before {
+    background: var(--muted);
+  }
+
+  .dashes a[aria-current]::before {
+    background: var(--fg);
+  }
+
+  .dashes a:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+  }
+
+  /* Hug the edge on phones so the dashes keep clear of the text. */
+  @media (max-width: 600px) {
+    .dashes {
+      right: 2px;
+    }
+  }
+</style>

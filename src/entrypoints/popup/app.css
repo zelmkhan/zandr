@@ -1,0 +1,7 @@
+/* Fixed popup size; Chrome caps popups at 800x600. */
+html,
+body {
+  width: 360px;
+  height: 600px;
+  margin: 0;
+}

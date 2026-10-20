@@ -1,0 +1,14 @@
+/* The approval window: as tall as Chrome makes it, the wallet's look inside. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+}

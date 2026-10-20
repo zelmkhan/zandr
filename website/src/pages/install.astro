@@ -1,0 +1,664 @@
+---
+// Installing zandr by hand until it's in the stores: download the zip, then load it into the
+// browser as an unpacked extension, in five steps. The zip and what's shown about it (version,
+// size, SHA-256) come from `npm run release:site` in the extension's folder.
+import Layout from '../layouts/Layout.astro';
+import Brand from '../components/Brand.astro';
+import release from '../data/release.json';
+
+const download = `/download/${release.file}`;
+const size = `${Math.round(release.bytes / 1024)} KB`;
+const version = release.version.replace('-', ' ');
+---
+
+<Layout title="Install Zandr" description="Download Zandr and load it into Chrome, Brave, Edge or Arc in five steps.">
+  <Brand href="/" label="Zandr, home" />
+
+  <main>
+    <header class="hero">
+      <p class="label">Early access</p>
+      <h1>Install Zandr <span class="quiet">in five steps.</span></h1>
+      <p class="lead">
+        Zandr isn't in the browser stores yet. Until it is, you install it from here: download it, then load it into your
+        browser by hand. It's the same wallet, and it takes about a minute.
+      </p>
+
+      <a class="download" href={download} download>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        Download Zandr
+      </a>
+      <p class="meta">Version {version} · {size} · Chrome, Brave, Edge, Arc</p>
+
+      <p class="soon"><span class="dot"></span>Coming to the Chrome Web Store and other stores: one click to install, updates on their own.</p>
+    </header>
+
+    <ol class="steps">
+      <li class="step">
+        <span class="number">1</span>
+        <div class="text">
+          <h2>Unzip it</h2>
+          <p>
+            Open the file you downloaded: inside is one folder, <b>zandr</b>. Move it somewhere it can stay, like Documents. Your
+            browser runs Zandr from this folder.
+          </p>
+        </div>
+        <div class="visual" aria-hidden="true">
+          <span class="item">
+            <svg viewBox="0 0 24 24">
+              <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"></path>
+                <path d="M14 3v5h5M10 6h1m-1 3h1m-1 3h1m-1 3h1"></path>
+              </g>
+            </svg>
+            .zip
+          </span>
+          <svg class="arrow" viewBox="0 0 24 24">
+            <path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="item bright">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"></path>
+            </svg>
+            zandr
+          </span>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="number">2</span>
+        <div class="text">
+          <h2>Open your extensions</h2>
+          <p>Type this into the address bar and press Enter. Websites aren't allowed to open it for you. In Edge, it's edge://extensions.</p>
+        </div>
+        <div class="visual">
+          <span class="address">
+            <code>chrome://extensions</code>
+            <button type="button" class="copy" data-copy="chrome://extensions" aria-label="Copy chrome://extensions">Copy</button>
+          </span>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="number">3</span>
+        <div class="text">
+          <h2>Turn on Developer mode</h2>
+          <p>The switch is in the top-right corner of the extensions page. It lets your browser load an extension from a folder.</p>
+        </div>
+        <div class="visual" aria-hidden="true">
+          <span class="setting">Developer mode<span class="switch"></span></span>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="number">4</span>
+        <div class="text">
+          <h2>Load the zandr folder</h2>
+          <p>Click <b>Load unpacked</b> and choose the zandr folder from step 1, the one with manifest.json inside.</p>
+        </div>
+        <div class="visual" aria-hidden="true">
+          <span class="buttons">
+            <span class="chrome-button on">
+              Load unpacked
+              <svg class="pointer" viewBox="0 0 24 24">
+                <path d="M5 3.5 18.5 10l-6 1.8-2.6 6.2Z" fill="#000000" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+            <span class="chrome-button">Pack extension</span>
+          </span>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="number">5</span>
+        <div class="text">
+          <h2>Pin it and get started</h2>
+          <p>
+            Click the puzzle piece in the toolbar, then the pin next to Zandr. Click Zandr's icon to create a wallet or import the one
+            you have.
+          </p>
+        </div>
+        <div class="visual" aria-hidden="true">
+          <!-- Chrome's extensions button: Material Symbols "extension" (Google, Apache 2.0). -->
+          <svg class="puzzle" viewBox="0 -960 960 960">
+            <path
+              d="M352-120H200q-33 0-56.5-23.5T120-200v-152q48 0 84-30.5t36-77.5q0-47-36-77.5T120-568v-152q0-33 23.5-56.5T200-800h160q0-42 29-71t71-29q42 0 71 29t29 71h160q33 0 56.5 23.5T800-720v160q42 0 71 29t29 71q0 42-29 71t-71 29v160q0 33-23.5 56.5T720-120H568q0-50-31.5-85T460-240q-45 0-76.5 35T352-120Zm-152-80h85q24-66 77-93t98-27q45 0 98 27t77 93h85v-240h80q8 0 14-6t6-14q0-8-6-14t-14-6h-80v-240H480v-80q0-8-6-14t-14-6q-8 0-14 6t-6 14v80H200v88q54 20 87 67t33 105q0 57-33 104t-87 68v88Zm260-260Z"
+              fill="currentColor"></path>
+          </svg>
+          <svg class="arrow" viewBox="0 0 24 24">
+            <path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="extension">
+            <img src="/mark.png" alt="" width="16" height="16" />
+            Zandr
+            <svg class="pin" viewBox="0 0 24 24">
+              <g fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 17v5" fill="none"></path>
+                <path
+                  d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1Z"
+                ></path>
+              </g>
+            </svg>
+          </span>
+        </div>
+      </li>
+    </ol>
+
+    <section class="notes" aria-label="Good to know">
+      <div class="note">
+        <h3>Updating</h3>
+        <p>
+          This version doesn't update itself. When a new one is out, download it and put its zandr folder in place of the old one,
+          same place, same name. Then click the reload arrow on Zandr's card in your extensions. Your wallet stays as it was.
+        </p>
+      </div>
+
+      <div class="note">
+        <h3>Keep your recovery phrase</h3>
+        <p>
+          Removing Zandr from your browser, or loading it from a different folder, starts it empty on this device. Your funds stay
+          on the blockchain, and your recovery phrase brings the wallet back.
+        </p>
+      </div>
+
+      <div class="note wide">
+        <h3>Check the download</h3>
+        <p>Its SHA-256 fingerprint should match this one exactly:</p>
+        <div class="hash">
+          <code>{release.sha256}</code>
+          <button type="button" class="copy" data-copy={release.sha256} aria-label="Copy the SHA-256 fingerprint">Copy</button>
+        </div>
+        <p class="how">
+          On macOS or Linux: <code>shasum -a 256 {release.file}</code><br />
+          On Windows: <code>certutil -hashfile {release.file} SHA256</code>
+        </p>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Copy buttons: the text in data-copy, then "Copied" on the button for a moment.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    let reset: ReturnType<typeof setTimeout> | undefined;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy!);
+      } catch {
+        return;
+      }
+      button.textContent = 'Copied';
+      clearTimeout(reset);
+      reset = setTimeout(() => (button.textContent = 'Copy'), 1500);
+    });
+  }
+</script>
+
+<style>
+  /* Light falls on the page from above, as on the home page. */
+  main::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(60% 50% at 50% -10%, rgba(243, 242, 234, 0.09), transparent 70%);
+    pointer-events: none;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 132px 40px 96px;
+  }
+
+  /* The top: what this is, and the download. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero > * {
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+
+    .hero > :nth-child(2) {
+      animation-delay: 0.08s;
+    }
+
+    .hero > :nth-child(3) {
+      animation-delay: 0.16s;
+    }
+
+    .hero > :nth-child(n + 4) {
+      animation-delay: 0.24s;
+    }
+
+    .steps,
+    .notes {
+      animation: rise 0.9s 0.34s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(6px);
+    }
+  }
+
+  .label {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 760px;
+    margin: 0;
+    font-size: clamp(40px, 5.6vw, 68px);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .quiet {
+    color: rgba(243, 242, 234, 0.42);
+  }
+
+  .lead {
+    max-width: 540px;
+    margin: 24px 0 0;
+    color: rgba(243, 242, 234, 0.6);
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* The same white pill as the home page's button. */
+  .download {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+    margin-top: 40px;
+    padding: 0 28px 0 22px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #000000;
+    font-size: 17px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .download svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  .download:hover {
+    background: #e9e9e9;
+  }
+
+  .download:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+
+  .meta {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    margin: 32px 0 0;
+    padding: 8px 16px 8px 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--surface);
+    color: rgba(243, 242, 234, 0.75);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f3953f;
+    box-shadow: 0 0 10px rgba(243, 149, 63, 0.6);
+  }
+
+  /* The steps: a number, what to do, and a small picture of where. */
+  .steps {
+    margin: 88px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 260px;
+    gap: 0 24px;
+    align-items: center;
+    padding: 28px 0;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .step:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .number {
+    display: grid;
+    place-items: center;
+    align-self: start;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 50%;
+    color: rgba(243, 242, 234, 0.8);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .text h2 {
+    margin: 4px 0 0;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .text p {
+    margin: 8px 0 0;
+    color: rgba(243, 242, 234, 0.6);
+    font-size: 15px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  b {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  /* A small framed picture of the browser's own controls. */
+  .visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 88px;
+    padding: 0 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .visual svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  .visual .arrow {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+
+  .item svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .bright {
+    color: var(--fg);
+  }
+
+  .address {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    height: 40px;
+    padding: 0 6px 0 14px;
+    border-radius: 999px;
+    background: rgba(243, 242, 234, 0.07);
+  }
+
+  .address code {
+    overflow: hidden;
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .copy {
+    flex: none;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(243, 242, 234, 0.1);
+    color: var(--fg);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .copy:hover {
+    background: rgba(243, 242, 234, 0.18);
+  }
+
+  .copy:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+  }
+
+  .setting {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--fg);
+  }
+
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #000000;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .chrome-button {
+    position: relative;
+    padding: 7px 12px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .chrome-button:not(.on) {
+    opacity: 0.45;
+  }
+
+  .chrome-button.on {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .visual .pointer {
+    position: absolute;
+    right: -6px;
+    bottom: -14px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .puzzle {
+    color: var(--fg);
+  }
+
+  .extension {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px 7px 12px;
+    border-radius: 10px;
+    background: rgba(243, 242, 234, 0.07);
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .visual .pin {
+    width: 15px;
+    height: 15px;
+    margin-left: 6px;
+    color: var(--fg);
+  }
+
+  /* Good to know: updating, the recovery phrase, checking the file. */
+  .notes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 48px;
+    margin-top: 72px;
+  }
+
+  .note h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .note p {
+    margin: 8px 0 0;
+    color: rgba(243, 242, 234, 0.6);
+    font-size: 14px;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .wide {
+    grid-column: 1 / -1;
+  }
+
+  .hash {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px 12px 12px 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+
+  .hash code {
+    flex: 1;
+    min-width: 0;
+    color: var(--fg);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  .how code {
+    color: rgba(243, 242, 234, 0.85);
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    word-break: break-all;
+  }
+
+  /* Narrow screens: the picture goes under the text, and the notes stack. */
+  @media (max-width: 720px) {
+    main {
+      padding: 112px 24px 72px;
+    }
+
+    .steps {
+      margin-top: 64px;
+    }
+
+    .step {
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 16px 16px;
+      padding: 24px 0;
+    }
+
+    .visual {
+      grid-column: 2;
+    }
+
+    .notes {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-top: 56px;
+    }
+
+    .soon {
+      border-radius: 16px;
+    }
+  }
+</style>

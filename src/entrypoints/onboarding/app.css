@@ -1,0 +1,72 @@
+/* Onboarding-only styles: shared form controls come from assets/ui.css. */
+:root {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Numbered grid of recovery phrase words, for showing and for typing them in. */
+.words {
+  display: grid;
+  /* minmax(0, …): inputs would otherwise stretch the columns to their default width. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.words li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+  background: var(--inset);
+  transition:
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.words li:focus-within {
+  border-color: var(--field-border-focus);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.words li:has([aria-invalid='true']) {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--ring-danger);
+}
+
+.words .index {
+  flex: none;
+  min-width: 16px;
+  color: rgba(var(--ink), 0.35);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.words .word,
+.words input {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.words input {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  caret-color: var(--fg);
+  outline: none;
+}
+
+@media (max-width: 480px) {
+  .words {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

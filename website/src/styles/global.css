@@ -1,0 +1,54 @@
+/* Same palette and type as the extension popup. */
+:root {
+  color-scheme: dark;
+
+  --bg: #000000;
+  --fg: #f3f2ea;
+  --muted: #7e7d76;
+  --hairline: rgba(243, 242, 234, 0.09);
+  --hairline-strong: rgba(243, 242, 234, 0.3);
+  --surface: rgba(243, 242, 234, 0.035);
+  /* Site only: form errors. */
+  --danger: #f08c7e;
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+::selection {
+  background: rgba(243, 242, 234, 0.2);
+}
+
+/* Smooth jumps when a section dash is clicked. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* The section dashes on the right stand in for the browser's scrollbar. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}

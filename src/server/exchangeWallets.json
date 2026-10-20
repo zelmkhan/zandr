@@ -1,0 +1,748 @@
+{
+  "updated": "2026-10-19",
+  "about": "Wallets exchanges control on Solana, by exchange: where deposits are swept to and reserves are held. Sending to one directly credits no account. Each list says where it comes from and how far to trust it: the exchange itself, its proof-of-reserves wallets, zandr checking on chain, or community labels (Dune Spellbook, whose license does not cover data platforms; used at the owner's decision). An address two sources disagree on goes to the more trusted one; token and stake accounts are left out.",
+  "exchanges": [
+    {
+      "name": "Backpack",
+      "trust": "exchange",
+      "source": "https://api.backpack.exchange/api/v1/wallets",
+      "basis": "Backpack's own wallet list",
+      "wallets": [
+        {
+          "address": "43DbAvKxhXh1oSxkJSqGosNw3HpBnmsWiak6tB5wpecN"
+        },
+        {
+          "address": "BbHG9GvPActFGogv3iNrpDAj4qpXr8t3jF16uGxXcKci"
+        },
+        {
+          "address": "EyzzXxQcR7NicVhMvHZy5DAeoCrxpCoY11pRneuysJiS"
+        },
+        {
+          "address": "DFFN6XgrTYDR2uFvaXJFRcFrMrtt6ZbPxpDs3mVbpxuR"
+        },
+        {
+          "address": "J16ovD5x6kZLYDYAa6CqfrwacHdM7fcKD9iKG5EoNeGR"
+        },
+        {
+          "address": "4VULyn2PoqzF6EyQ9acJqeAwg7pwmQPppM56NRJyQ1Fi"
+        },
+        {
+          "address": "6wspq3nz3qPQ9X6rbLM5bEDHK525yPSNqyqeABXcSMHQ"
+        },
+        {
+          "address": "ByvBYWA19GaufT5xNoy48jPTTjhGGFVkvv8RYNTVEDcm"
+        },
+        {
+          "address": "HgTWrWU195u6s4v3JiEjJFCb6J6wxtQh8DAYV63tCx6Q"
+        },
+        {
+          "address": "HwDX5eJkzPAJ7y7ENrH23HaDGUgB4nXPxG8UsB4cEMGE"
+        },
+        {
+          "address": "5stwKMsakQkH3uzN5eQx9LKzq6N8q3DBjXzkHyvudFde"
+        },
+        {
+          "address": "FCQSFKkw2JPhpG4M18nvGfiNAK6N3gFBmp8pkn4CxYGs"
+        },
+        {
+          "address": "6m68XVvBR4oLCgM7YFgH1VqzzV5vk9UimvmVUvyKw6c2"
+        },
+        {
+          "address": "HQGAWeYg7EFTdCv5AetxpQaDK8s39y6Xp7SSsDVh3ybP"
+        },
+        {
+          "address": "AdB5E9PCHYTuo8BdQcwkVPfWPDrZss6s1nGU7WLxxL38"
+        },
+        {
+          "address": "9NJmj9VaTU9D7ytdzy5RHMrfAgw2pYwqnUhuMqatcsr"
+        },
+        {
+          "address": "5RNEgXwftUuwhYm8q3fsy9BYQ88uMVCE48W8RioQ8b2W"
+        },
+        {
+          "address": "JB2qSwkrCUxUuxat5uEKcAJC8hreFJvxgfWQQ8WQqJmi"
+        }
+      ]
+    },
+    {
+      "name": "Binance",
+      "trust": "exchange",
+      "source": "https://www.binance.com/bapi/apex/v1/public/apex/market/por/address",
+      "basis": "Binance's own proof-of-reserves address list",
+      "wallets": [
+        {
+          "address": "28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU",
+          "note": "held with Ceffu"
+        },
+        {
+          "address": "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S"
+        },
+        {
+          "address": "38xCLm9kSExfGU1GdyVuX4vop7SZns9kU2mQyTmmMdUP"
+        },
+        {
+          "address": "3JR4ETCTVqnysiARm9LvuigzuXnDydbWXYYYpgZzzhDi"
+        },
+        {
+          "address": "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u"
+        },
+        {
+          "address": "3yFwqXBfZY4jBVUafQ1YEXw189y2dN3V5KQq9uzBDy1E"
+        },
+        {
+          "address": "5SDrsMNTYdhmApjfqYHDvjoW92f2S42vcc7zNDVcQ9Ej",
+          "note": "held with Ceffu"
+        },
+        {
+          "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"
+        },
+        {
+          "address": "6QJzieMYfp7yr3EdrePaQoG3Ghxs2wM98xSLRu8Xh56U"
+        },
+        {
+          "address": "6oCa9Tz8VXVp63WiFyruE5PD6yXz3pCsv6oGzUGvg9TP"
+        },
+        {
+          "address": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+        },
+        {
+          "address": "BZ3kabSsMzbuJUguYxtmkRtzw7ACqw1DUMH8PcbvXiUr",
+          "note": "held with Ceffu"
+        },
+        {
+          "address": "EPauhjQjjTBCpeBtszS3xGRASLpEJFM1cspSiFRXZa9Z"
+        },
+        {
+          "address": "EtwjSV65xPjZxDmmoNTw78gdYxLa1ayqVo4kXGsjhMiA"
+        },
+        {
+          "address": "G9RCBaYb8aBRxoe8QBC2ucGrVqjuZFysRhY8d56cnNT1"
+        },
+        {
+          "address": "GBrURzmtWujJRTA3Bkvo7ZgWuZYLMMwPCwre7BejJXnK"
+        },
+        {
+          "address": "GK35nWN6ZHSGZrRTf8kTQd8RkFCighChPEb41XwSFVAC"
+        },
+        {
+          "address": "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss"
+        },
+        {
+          "address": "HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664"
+        },
+        {
+          "address": "c5f9zfpkKMD9N8uLqJcFeJAAz7v12vDMnup9Y6EeQkk"
+        }
+      ]
+    },
+    {
+      "name": "Bitstamp",
+      "trust": "exchange",
+      "source": "https://www.bitstamp.net/api/v2/wallet_transparency/",
+      "basis": "Bitstamp's own wallet transparency list",
+      "wallets": [
+        {
+          "address": "9D8xSHWqF9NJWqCtn3rNxYEox63aCbWxYzTMfMur7Cc9"
+        },
+        {
+          "address": "HBxZShcE86UMmF93KUM8eWJKqeEXi5cqWCLYLMMhqMYm"
+        },
+        {
+          "address": "37LxMhAY1m2wQqZjxKtP1kHG2RPno4fDAKN4SbEQY9i9"
+        },
+        {
+          "address": "ETZY5TjMKdV2KdHVmUNTN56pWhMc8TyjrXtQ7YexDCmG"
+        },
+        {
+          "address": "6yYWNCgNW65UjggR9ZEtZKtdsFer39RJeg3TqB6LtSZM"
+        },
+        {
+          "address": "FhU7HxDCjW9UsvD4Yc3heWyqa2rCSkA6rXQ91Pcx1Ahm"
+        },
+        {
+          "address": "DFNYdCma4Yj5MdKch8ByDuzSGdcdezk6KvtTHj3n6uk7"
+        },
+        {
+          "address": "8UNmCfRcRt9yQZSEW9NdVEcJT5tHBawiKPne27Jc9NEi"
+        },
+        {
+          "address": "DLY8RdtrGELZh7Dnmf1tm99sfcXh6KdMtgjgRD1m1uQ7"
+        },
+        {
+          "address": "DTNnXBh7JcKTzfWbqcuNYaYBQXS2fWWoXEdJ5iyNwvFX"
+        },
+        {
+          "address": "E1EfU3iKUS16mB2vdgj6mi3ssV32dm2Pxh7W74XxKuYu"
+        },
+        {
+          "address": "i57ExrKB2i4mSgjSuq2xz617mQXmu33WG2WEYypmdvX"
+        }
+      ]
+    },
+    {
+      "name": "Bitfinex",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/bitfinex/index.js",
+      "basis": "Bitfinex's published wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "FxteHmLwG9nk1eL4pjNve3Eub2goGkkz6g6TbvdmW46a"
+        },
+        {
+          "address": "FyJBKcfcEBzGN74uNxZ95GxnCxeuJJujQCELpPv14ZfN"
+        },
+        {
+          "address": "GnCRxKqUEPouYMvTb5nJMGrDB3VkTXZnDTaDuVZdnWA3"
+        }
+      ]
+    },
+    {
+      "name": "Bitget",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/bitget/index.js",
+      "basis": "Bitget's proof-of-reserves wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "A77HErqtfN1hLLpvZ9pCtu66FEtM8BveoaKbbMoZ4RiR"
+        },
+        {
+          "address": "3bLkLrRvkwHMrqyoCaDSCn6bZnpfJCVsHxcmznUwB1p5"
+        },
+        {
+          "address": "42zAGwv37eZFwwcExfCAV9oSw2kNQX3aBxsbM6zvQECM"
+        },
+        {
+          "address": "YiZeibU6zzEHyKiSTjygXUPkMktKj9a3DCAcWmZ4XjF"
+        },
+        {
+          "address": "AvLGED7RBzYv4AuvkgFSCFMqyB2WjUff7TVKVEv5MjMs"
+        },
+        {
+          "address": "48Zo7g9SReCWmNtCvr2es4H9CLCRQHrSND2Wzi61sCsQ"
+        },
+        {
+          "address": "DP1FqoBnE23QNNz4LpT9FCQvETdJN4nph5c11NiinrGg"
+        },
+        {
+          "address": "AyhsmFptkM251V1AoH2gf8d4QUnxUkkmaDqFfFwBwGni"
+        },
+        {
+          "address": "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX"
+        },
+        {
+          "address": "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh"
+        },
+        {
+          "address": "EPxGiguU5j5tKFnMQpzMrzczEQ5NRtLWrpG9fADvtadX"
+        },
+        {
+          "address": "8ZPaybdHeNwpoxmU1ALcbLoE3eK443Jq4emk82VCscag"
+        },
+        {
+          "address": "3RtJvxpkok13LGQsQ3Ye4QvCkbP3ioMpra7ccuf9XqsF"
+        },
+        {
+          "address": "Bk57qr4wSvzCqGKHD2vAc6n88oHyDoD8b3HnvGEF5iQN"
+        }
+      ]
+    },
+    {
+      "name": "Gate",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/gate-io/index.js",
+      "basis": "Gate's proof-of-reserves wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w"
+        },
+        {
+          "address": "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J"
+        },
+        {
+          "address": "G9XFfWz6adb9wFDKN2v7HfmJDgAc2hirrTwBmca4w26C"
+        },
+        {
+          "address": "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN"
+        },
+        {
+          "address": "AGrghB4tNEJhWsPoQ73We5KAvgp6q512BkBx6fqY4i4b"
+        },
+        {
+          "address": "DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp"
+        }
+      ]
+    },
+    {
+      "name": "HTX",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/huobi/index.js",
+      "basis": "HTX's proof-of-reserves wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "88xTWZMeKfiTgbfEmPLdsUCQcZinwUfk25EBQZ21XMAZ"
+        },
+        {
+          "address": "BY4StcU9Y2BpgH8quZzorg31EGE4L1rjomN8FNsCBEcx"
+        },
+        {
+          "address": "8NBEbxLknGv5aRYefFrW2qFXoDZyi9fSHJNiJRvEcMBE"
+        },
+        {
+          "address": "5bJcc9eb2XE7mqcET2xDuAdMGuXWybb4YPmAHLjKLhQG"
+        }
+      ]
+    },
+    {
+      "name": "KuCoin",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/kucoin/index.js",
+      "basis": "KuCoin's proof-of-reserves wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "BmFdpraQhkiDQE6SnfG5omcA1VwzqfXrwtNYBwWTymy6"
+        },
+        {
+          "address": "EkUy8BB574iEVAQE9dywEiMhp9f2mFBuFu6TBKAkQxFY"
+        },
+        {
+          "address": "HVh6wHNBAsG3pq1Bj5oCzRjoWKVogEDHwUHkRz3ekFgt"
+        },
+        {
+          "address": "3VRJ7acLUS9RYLLgRMenM6BqBVVQpY7xFXa7jKDdYw6M"
+        },
+        {
+          "address": "EEnu7YoRDnZ1EHHggnnQoFk7fUjNQrXQw33vgFWwMJn"
+        },
+        {
+          "address": "57vSaRTqN9iXaemgh4AoDsZ63mcaoshfMK8NP3Z5QNbs"
+        },
+        {
+          "address": "EfwJn8cXCYhcGrsavxWSDbUFHPrCK9gvdCr6AVywFBPg"
+        },
+        {
+          "address": "DBmae92YTQKLsNzXcPscxiwPqMcz9stQr2prB5ZCAHPd"
+        },
+        {
+          "address": "FZ1t8TZtx7VSCQdBsxvFJiezj9paUBF6Ub7RKA2eTGyE"
+        },
+        {
+          "address": "GL8T72PKygWaYrLKtSteN9UUvYYnuC8azNDunk4eaqqQ"
+        },
+        {
+          "address": "6BhBoBB47wSGjK5uzcGWNcTf2oNRPQNuv6GVdkNyj9PB"
+        },
+        {
+          "address": "7gQ1CfjdysJkSEVSDXNjJHnzrqvP2zQYQDJHJP67o1bb"
+        },
+        {
+          "address": "AGVhmrhDi3RKLu9nxnRqp3CUpaG3SVeYXWkWcygHAk8N"
+        },
+        {
+          "address": "CAxKWUpSbsNsWu2gEFjed64jrNxiNYfRMVEMahshHotb"
+        },
+        {
+          "address": "FPRFLszBJFHCThF2yWvkGkfvtwyFPRGX9MFHnDGP6UYp"
+        }
+      ]
+    },
+    {
+      "name": "OKX",
+      "trust": "proof-of-reserves",
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/okex/index.js",
+      "basis": "OKX's proof-of-reserves wallets, as collected by DefiLlama",
+      "wallets": [
+        {
+          "address": "CeGyfZdtbjzC5FeVXCBdYE1v397yxxqYgmMcUwtouJUu"
+        },
+        {
+          "address": "6Attw9NcFspCAreufvQ3mW8aqXEk6MDceeoC8obw45cJ"
+        },
+        {
+          "address": "CE8joA143dBjsCFTeBxBs3kNGNU87WH6Q7GMMfxPzSr2"
+        },
+        {
+          "address": "FefAbVt2EgXMGxeJb6sB1k5pQJhiGPxw4mB1zeUohZLk"
+        },
+        {
+          "address": "BEaiMhcc4Kao7B4hoq6r9m8neUpfimUMwhzugKxtkZw6"
+        },
+        {
+          "address": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD"
+        },
+        {
+          "address": "APJmXrtC9TUAg5gcjbcsVUiVzeDv85xLZRLad1GiQTNE"
+        },
+        {
+          "address": "5kiqH41rz2wPoNH5FuDJ3x8dB3EEe3XGoSWy2485tAp9"
+        },
+        {
+          "address": "8dUc88Nss8uhqzzFvUQhepkwZaVrfzpoCfKjCXGkdzAG"
+        },
+        {
+          "address": "44DwSkZbY2PVo9wfFP21D7HG7xf5rw8QaF6xSLGSfm7P"
+        },
+        {
+          "address": "945SJTwsBSqwEEgtKMnhcLDnJowP6YpJUTEykMVK5k6q"
+        },
+        {
+          "address": "9un5wqE3q4oCjyrDkwsdD48KteCJitQX5978Vh7KKxHo"
+        },
+        {
+          "address": "FJS2rTjAQmFFRmVqtnkceGvLJrMwUPgCUfLjciuMYkSC"
+        },
+        {
+          "address": "7fGw3UURsxk1szQ4buxQyEkiF4P6z7vx7sN1MHEguTJg"
+        },
+        {
+          "address": "BhJrLQEyFyrcf1746pHATzAZQpC1uk3SJf2AHHK7LW3K"
+        },
+        {
+          "address": "5URmUviWsAtcciFXqgM7f1jmhvBULdQDT47dqDkrJUi"
+        },
+        {
+          "address": "6NnzUC7mrM7ZgKdcMq1jPAdqh9TMgdsaVR1DNq6kce3A"
+        },
+        {
+          "address": "7o9ukGhWvc71yYcjinKnrxMn2kFMyQD1iCG3romrzg7r"
+        },
+        {
+          "address": "7CtzEcGeYpMfR1aEi1Gbt8GRHDPH9uDB6GNTsBABqSmo"
+        },
+        {
+          "address": "GcFZHQVJ2icPGLrA9qPLq88b7eqBXSUcdL1utUtUfcSD"
+        },
+        {
+          "address": "BWZqi67kXsvf5crjd19Fb3gmf3DCipGE8eWWJT2YHDXQ"
+        },
+        {
+          "address": "CGZAHxBannZzYK3rzVdG1e3uNjMxrmaXDhLEZxQBbueq"
+        },
+        {
+          "address": "EBVigEhxvkWUwreG98kTh5FbZEjnXTXC5ANZtLz4YpHQ"
+        },
+        {
+          "address": "HnLezgQkNVWMp2AV6mcHM1Ljst32kfsoVnYUkvXuQpjg"
+        },
+        {
+          "address": "is6MTRHEgyFLNTfYcuV4QBWLjrZBfmhVNYR6ccgr8KV"
+        },
+        {
+          "address": "FmpbkPgxjoYBJ6ac6YMhZ1FycCwuG8Zs2epxgsGFYvf6"
+        },
+        {
+          "address": "C68a6RCGLiPskbPYtAcsCjhG8tfTWYcoB4JjCrXFdqyo"
+        },
+        {
+          "address": "AEZoku1fLfUz5JYJ3kJ5YVdf3QT1T4RwdggGbuR8Eakd"
+        },
+        {
+          "address": "CBEADkb8TZAXHjVE3zwad4L995GZE7rJcacJ7asebkVG"
+        },
+        {
+          "address": "3WjxkXbu9JBosUWUnJpjzec7Wa4rSkWo9khUbbLDCssk"
+        },
+        {
+          "address": "3LzmBquLMap6ak2ofyeDbH99VhJ84k336RJzkLBwq3b1"
+        },
+        {
+          "address": "9bAV2yg9oTWMc3sTdXhSeyDhuxs3iYfqvBzq1boYTLJT"
+        },
+        {
+          "address": "8wM44Ryv9DFCSfkgUnPEPgnsc53arT4cnmXL6LnnC4UW"
+        },
+        {
+          "address": "9cFGNecbnLNiyYNZYKjN8egmMVrvn7HBQUCN9y6uXeYk"
+        },
+        {
+          "address": "Da8RuzF4whvWoQP8DD1rZMTi2i1u2VHFcU8zFrwfdBzA"
+        },
+        {
+          "address": "9aiqyEUmwb63yUjwPHwY4jR68Pj5QsCQBGhYWRJEwXZA"
+        },
+        {
+          "address": "3bwCjRXv4LASkv7DbLRJi7fDXgRRfEZhEstDVoZsjEHR"
+        },
+        {
+          "address": "C1Fr2dLHvNMWKFuiM5nK5StfgWjbM6QcZcC5nkcYghkJ"
+        },
+        {
+          "address": "8PFD2CYF275p8YdRmhk4C1wcNoKeRVrouYdMbZV6HwHH"
+        },
+        {
+          "address": "3n7E2gZmCaDGpmvmHVHhHg13x7y1zG37tnEXvizxnKY1"
+        },
+        {
+          "address": "5njZuDSS2WTFkvWWsgv8Q4TfQBuCASKJAztc5yF2qLWZ"
+        }
+      ]
+    },
+    {
+      "name": "Bybit",
+      "trust": "on-chain",
+      "source": "on-chain",
+      "basis": "Confirmed by zandr on chain: deposit addresses sweep into 2qo8…; AC5R… pays for and co-signs those sweeps",
+      "wallets": [
+        {
+          "address": "2qo8jvuc49pFmTjmUHLiARSV6ppPTaE7gw27ZJ6DnNZy",
+          "note": "hot wallet: deposits are swept into it"
+        },
+        {
+          "address": "AC5RDfQFmDS1deWZos921JfqscXdByf8BKHs5ACWjtW2",
+          "note": "pays for token deposit sweeps into 2qo8…"
+        }
+      ]
+    },
+    {
+      "name": "AscendEX",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "6iVBAsquJRaLsXbojb18kqTW1d5iVLspVjCtsReZBKhY",
+          "note": "labeled \"AscendEX 1\""
+        }
+      ]
+    },
+    {
+      "name": "Binance",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "Amf2mf2Ciap5wYAEKDtGoQHfHPWaKbyFYhutMK46hTRF",
+          "note": "labeled \"Binance 3\""
+        },
+        {
+          "address": "DRpbCBMxVnDK7maPM5tGv6MvB3v1sRMC86PZ8okm21hy",
+          "note": "labeled \"Binance 5\""
+        },
+        {
+          "address": "Edbef6Xi35u6iYEmeGAFmThCZrgj6MxzYAgAmZFYPmFF",
+          "note": "labeled \"Binance 17\""
+        }
+      ]
+    },
+    {
+      "name": "Bybit",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "42brAgAVNzMBP7aaktPvAmBSPEkehnFQejiZc53EpJFd",
+          "note": "labeled \"Bybit 1\""
+        }
+      ]
+    },
+    {
+      "name": "Coinbase",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "note": "labeled \"Coinbase 1\""
+        },
+        {
+          "address": "2AQdpHJ2JpcEgPiATUXjQxA8QmafFegfQwSLWSprPicm",
+          "note": "labeled \"Coinbase 2\""
+        },
+        {
+          "address": "GJRs4FwHtemZ5ZE9x3FNvJ8TMwitKTh21yxdRPqn7npE",
+          "note": "labeled \"Coinbase 3\""
+        }
+      ]
+    },
+    {
+      "name": "CoinDCX",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "3Nvb6UeEMVLf9DsehhqT8B5SNHrNLEpHdf42nXi9aLK8",
+          "note": "labeled \"CoinDCX 2\""
+        },
+        {
+          "address": "4E73T5Zubx3kPtheJ5DB6QMEaadMQowhUcdRV6f9rvVt",
+          "note": "labeled \"CoinDCX 3\""
+        },
+        {
+          "address": "5bjZPeHbdGUCduyY8i2dZkkgLWkG3u1P2sbt1Jb5kFxW",
+          "note": "labeled \"CoinDCX 4\""
+        },
+        {
+          "address": "6XuYJv4PyauP2WKdgd4fZYvjK7uBdVkEySoy89fXV9XT",
+          "note": "labeled \"CoinDCX 5\""
+        },
+        {
+          "address": "6fuHoq5Tr2j6dFTGWHmLUhVBUj8XvDBgdGGzgfSwe5DN",
+          "note": "labeled \"CoinDCX 6\""
+        },
+        {
+          "address": "6p8LxMvHUZtdiik28TQy483WaCaDGsAUFm3PKjpUpLB",
+          "note": "labeled \"CoinDCX 7\""
+        },
+        {
+          "address": "8W4u11KJYhmCY9rs2MCVHmMrgpeHLgsbkwAarbNvzr2Y",
+          "note": "labeled \"CoinDCX 8\""
+        },
+        {
+          "address": "8nFGjbJNdarBouEC856Qmhrm8fptuEUnZrpNKgougsLi",
+          "note": "labeled \"CoinDCX 9\""
+        },
+        {
+          "address": "8zSWFy8wvHEuFJ7CZ81wy2wn4fPaju6jc6tbtbv5x9f8",
+          "note": "labeled \"CoinDCX 10\""
+        },
+        {
+          "address": "92qQCjprXoJ5GYji5it8PJTneBFxzSJ6mYosQWxYKxx4",
+          "note": "labeled \"CoinDCX 11\""
+        },
+        {
+          "address": "9buzBcTujdQLyf1XkyLaSrGNbkyNxg8qML3bpKWCz9P6",
+          "note": "labeled \"CoinDCX 12\""
+        },
+        {
+          "address": "AjCHG7CYJST379Eh7xLqhRaUyBzurFKjsX7z8DTrfGZp",
+          "note": "labeled \"CoinDCX 13\""
+        },
+        {
+          "address": "Bq6NnW55ToJrAM7NxUYDmSMbKKCQ6f742ZemLiypqjzY",
+          "note": "labeled \"CoinDCX 14\""
+        },
+        {
+          "address": "EUXVDPCwXe9sJt3VucYfveB1kk5piSWJqhWQEsFtE2CR",
+          "note": "labeled \"CoinDCX 15\""
+        },
+        {
+          "address": "EhZLSqyWrazhqR5bmyyEfFRa3ycWu9KPgQgQ7G1R9zC9",
+          "note": "labeled \"CoinDCX 16\""
+        },
+        {
+          "address": "HwgxMWxaq5cDbdVmoH24Gy8F9m9DkU7Mwgdbgh4mh2m7",
+          "note": "labeled \"CoinDCX 17\""
+        }
+      ]
+    },
+    {
+      "name": "CoinList",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "7SRyi7urg28j1XtioKbcJLtkL9Pqu39Y4CTAXwmu2Hts",
+          "note": "labeled \"CoinList 1\""
+        }
+      ]
+    },
+    {
+      "name": "Crypto.com",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "6FEVkH17P9y8Q9aCkDdPcMDjvj7SVxrTETaYEm8f51Jy",
+          "note": "labeled \"Crypto.com 1\""
+        },
+        {
+          "address": "AobVSwdW9BbpMdJvTqeCN4hPAmh4rHm7vwLnQ5ATSyrS",
+          "note": "labeled \"Crypto.com 2\""
+        }
+      ]
+    },
+    {
+      "name": "Gate",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
+          "note": "labeled \"Gate.io 1\""
+        }
+      ]
+    },
+    {
+      "name": "Kraken",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "FWznbcNXWQuHTawe9RxvQ2LdCENssh12dsznf4RiouN5",
+          "note": "labeled \"Kraken 1\""
+        },
+        {
+          "address": "krakeNd6ednDPEXxHAmoBs1qKVM8kLg79PvWF2mhXV1",
+          "note": "labeled \"Kraken 2\""
+        }
+      ]
+    },
+    {
+      "name": "LAToken",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "51AASorYCLPcUHnuQQaau6DfsfFRixzh4HsoQwsc5Ara",
+          "note": "labeled \"LAToken 2\""
+        }
+      ]
+    },
+    {
+      "name": "MEXC",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ",
+          "note": "labeled \"MEXC 1\""
+        }
+      ]
+    },
+    {
+      "name": "Rollbit",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "821dTn3JEhhqg11Q24ijxRBYXfKWngGMibTqHS8hWjZb",
+          "note": "labeled \"Rollbit 1\""
+        }
+      ]
+    },
+    {
+      "name": "Swissborg",
+      "trust": "community",
+      "source": "https://github.com/duneanalytics/spellbook/blob/main/dbt_subprojects/hourly_spellbook/models/_sector/cex/addresses/chains/solana/cex_solana_addresses.sql",
+      "basis": "Dune Spellbook's community labels (BSL 1.1: not licensed for data platforms; used at the owner's decision)",
+      "wallets": [
+        {
+          "address": "Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA",
+          "note": "labeled \"Swissborg 1\""
+        },
+        {
+          "address": "2XxP4kS2vfkiMvpLpGNxry3fPUYimsuAmSbqL1KnuwZ8",
+          "note": "labeled \"Swissborg 3\""
+        },
+        {
+          "address": "9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL",
+          "note": "labeled \"Swissborg 4\""
+        },
+        {
+          "address": "2E1UKoiiZPwsp4vn6tUh5k61kG2UqYpT7oBrFaJUJXXd",
+          "note": "labeled \"Swissborg 5\""
+        }
+      ]
+    }
+  ]
+}

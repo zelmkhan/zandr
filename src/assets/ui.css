@@ -1,0 +1,317 @@
+/* Form controls and text styles shared by full-page views (onboarding, settings).
+   Palette and base styles come from assets/theme.css. */
+:root {
+  /* Form controls: a faint fill and border, a brighter border and soft ring on focus. */
+  --field: rgba(var(--ink), 0.035);
+  --field-border: rgba(var(--ink), 0.09);
+  --field-border-hover: rgba(var(--ink), 0.16);
+  --field-border-focus: rgba(var(--ink), 0.4);
+  --ring: rgba(var(--ink), 0.07);
+  --ring-danger: rgba(240, 140, 126, 0.14);
+}
+
+/* Text is left-aligned throughout: easier to read than centered lines in a form. */
+.title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* Main action: the violet pill used across zandr. */
+.button {
+  width: 100%;
+  height: 48px;
+  margin-top: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    transform 0.12s var(--ease);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+/* Disabled reads as unavailable, not as a faded copy of the real button. */
+.button:disabled {
+  background: rgba(var(--ink), 0.08);
+  color: rgba(var(--ink), 0.35);
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+  outline-offset: 3px;
+}
+
+/* A labelled field: the label sits above the control, never only as a placeholder. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: rgba(var(--ink), 0.85);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  background: var(--field);
+  caret-color: var(--fg);
+  font-size: 15px;
+  outline: none;
+  transition:
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.input::placeholder {
+  color: rgba(var(--ink), 0.3);
+}
+
+.input:hover {
+  border-color: var(--field-border-hover);
+}
+
+.input:focus {
+  border-color: var(--field-border-focus);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px var(--ring-danger);
+}
+
+/* A password field with room for the show/hide button (components/RevealButton.svelte). */
+.secret {
+  position: relative;
+}
+
+.secret .input {
+  padding-right: 48px;
+}
+
+/* Checkbox with its label, for "I understand" confirmations. */
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  color: rgba(var(--ink), 0.9);
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.check input {
+  display: grid;
+  flex: none;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  border: 1.5px solid rgba(var(--ink), 0.3);
+  border-radius: 5px;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--ease),
+    border-color 0.15s var(--ease);
+}
+
+.check input::before {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-bottom: 2px solid var(--bg);
+  border-left: 2px solid var(--bg);
+  opacity: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.check input:checked {
+  border-color: var(--fg);
+  background: var(--fg);
+}
+
+.check input:checked::before {
+  opacity: 1;
+}
+
+.check input:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+  outline-offset: 2px;
+}
+
+.check:has(input:disabled) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* A grouped surface: the recovery phrase, the address, lists of choices. */
+.card {
+  border: 1px solid var(--field-border);
+  border-radius: 16px;
+  background: var(--field);
+}
+
+/* Segmented control, for switching between two ways of doing the same thing. */
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  background: var(--field);
+}
+
+.segmented button {
+  flex: 1;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.segmented button:hover {
+  color: var(--fg);
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--fill-strong);
+  color: var(--fg);
+}
+
+.segmented button:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+  outline-offset: 1px;
+}
+
+/* Small text button with an icon, e.g. "Copy". */
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.text-button:hover:not(:disabled) {
+  background: rgba(var(--ink), 0.05);
+  color: var(--fg);
+}
+
+.text-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.text-button:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+}
+
+/* On/off switch: a checkbox styled as a pill with a sliding knob. */
+.switch {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(var(--ink), 0.16);
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease);
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fg);
+  transition: transform 0.2s var(--ease);
+}
+
+.switch:checked {
+  background: var(--fg);
+}
+
+.switch:checked::before {
+  background: var(--bg);
+  transform: translateX(16px);
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+  outline-offset: 2px;
+}

@@ -1,0 +1,15 @@
+# Railway deploys of zandr's API (api/Dockerfile) need only src/server and api/.
+# Patterns start with / so they only match at the repo root: railway up from website/
+# reads this file too, and a bare "public/" would drop the site's public/ folder.
+/website/
+/public/
+/.output/
+/.wxt/
+node_modules/
+/src/entrypoints/
+/src/assets/
+/src/components/
+/src/lib/
+/scripts/
+# Secrets for local scripts (exchange API keys) never leave this machine.
+/.env*

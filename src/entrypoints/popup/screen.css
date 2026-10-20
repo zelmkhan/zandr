@@ -1,0 +1,208 @@
+/* Screens of the unlocked wallet (address book, wallets): their bar, lists, forms and
+   buttons. Scoped under .screen so they never reach the unlock form or the home view. */
+/* At least the view's height (so a button with margin-top: auto sits at the bottom), and as tall
+   as its content beyond that: the view scrolls, its bottom padding after the last thing on the
+   screen, never squeezing what's on it. */
+.screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+/* Fixed: above a long list it would otherwise shrink, and its title ride up. */
+.screen .bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  margin: 0 -8px;
+}
+
+.screen h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.screen .icon-button,
+.screen .spacer {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+}
+
+.screen .icon-button {
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.screen .icon-button:hover {
+  background: rgba(var(--ink), 0.07);
+  color: var(--fg);
+}
+
+.screen .icon-button:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+}
+
+.screen .icon-button.small {
+  width: 32px;
+  height: 32px;
+}
+
+.screen .primary {
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease);
+}
+
+.screen .primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.screen .primary:disabled {
+  background: rgba(var(--ink), 0.08);
+  color: rgba(var(--ink), 0.35);
+  cursor: not-allowed;
+}
+
+.screen .primary:focus-visible {
+  outline: 2px solid var(--hairline-strong);
+  outline-offset: 3px;
+}
+
+.screen .list {
+  display: flex;
+  flex-direction: column;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.screen .list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.screen .list li + li {
+  border-top: 1px solid var(--divider);
+}
+
+.screen .initial {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fill);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.screen .who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.screen .who strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen .who span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.screen .form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.screen .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.screen .field span {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(var(--ink), 0.85);
+}
+
+.screen .field input,
+.screen .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--ink), 0.09);
+  border-radius: 10px;
+  background: rgba(var(--ink), 0.035);
+  caret-color: var(--fg);
+  font-size: 14px;
+  line-height: 1.45;
+  outline: none;
+  resize: none;
+  transition:
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.screen .field textarea {
+  word-break: break-all;
+}
+
+.screen .field input::placeholder,
+.screen .field textarea::placeholder {
+  color: rgba(var(--ink), 0.3);
+}
+
+.screen .field input:focus,
+.screen .field textarea:focus {
+  border-color: rgba(var(--ink), 0.4);
+  box-shadow: 0 0 0 3px rgba(var(--ink), 0.07);
+}
+
+.screen .field [aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.screen .error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.screen .form .primary {
+  margin-top: 4px;
+}
