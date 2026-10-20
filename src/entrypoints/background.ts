@@ -10,7 +10,7 @@ import {
 } from '@/lib/messages';
 import { eraseAfter, setEraseAfter, wasErased, wrongPassword } from '@/lib/guard';
 import { addContact, removeContact } from '@/lib/addressBook';
-import { createWallet, exportPrivateKey, importWallet, removeWallet, reorderWallets } from '@/lib/wallets';
+import { createWallet, exportPhrase, exportPrivateKey, importWallet, removeWallet, reorderWallets } from '@/lib/wallets';
 import { getPortfolio } from '@/lib/portfolio';
 import { holdLive, rewatch } from '@/lib/live';
 import { EXCHANGE_TOKENS_ALARM, refreshExchangeTokens } from '@/lib/exchangeTokens';
@@ -213,6 +213,10 @@ async function handle(request: Request): Promise<Response> {
     case 'wallets:exportKey':
       if (typeof request.id !== 'string' || typeof request.password !== 'string') throw new Error('Invalid request');
       return exportPrivateKey(request.id, request.password);
+
+    case 'wallets:exportPhrase':
+      if (typeof request.id !== 'string' || typeof request.password !== 'string') throw new Error('Invalid request');
+      return exportPhrase(request.id, request.password);
 
     case 'wallets:remove':
       if (typeof request.id !== 'string' || typeof request.password !== 'string') throw new Error('Invalid request');

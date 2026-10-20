@@ -88,6 +88,23 @@ export async function exportPrivateKey(id: string, password: string): Promise<Re
   return key === null ? { ok: false, error: 'wrong-password', ...(await wrongPassword()) } : { ok: true, key };
 }
 
+// The recovery phrase a wallet comes from, once the password checks out, and the names of every
+// wallet in the vault made from it: the phrase restores them all. A wallet imported by its private
+// key alone has none.
+export async function exportPhrase(id: string, password: string): Promise<ResponseMap['wallets:exportPhrase']> {
+  const found = await withPassword(password, (contents) => {
+    const wallet = contents.wallets.find((item) => item.id === id);
+    const keyring = contents.keyrings.find((item) => item.id === wallet?.keyring);
+    if (!wallet || !keyring) throw new Error('No such wallet');
+    if (keyring.secret.kind !== 'phrase') return { phrase: null };
+    return { phrase: { words: [...keyring.secret.words], wallets: contents.wallets.filter((item) => item.keyring === keyring.id).map((item) => item.name) } };
+  });
+  // Null: the password was wrong.
+  if (found === null) return { ok: false, error: 'wrong-password', ...(await wrongPassword()) };
+  if (!found.phrase) return { ok: false, error: 'no-phrase' };
+  return { ok: true, ...found.phrase };
+}
+
 // Removes a wallet from the vault once the password checks out, and its phrase or key too if no
 // other wallet uses it. The only wallet can't be removed.
 export async function removeWallet(id: string, password: string): Promise<ResponseMap['wallets:remove']> {

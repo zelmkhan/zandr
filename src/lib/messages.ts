@@ -28,7 +28,9 @@ export type WrongPassword = { attemptsLeft: number | null; erased: boolean };
 export type Account = { name: string; address: string };
 
 // One of the wallets in the vault, as the wallet switcher lists it.
-export type WalletSummary = Account & { id: string };
+// `source`: how it came into the vault, by its recovery phrase or by its private key alone (only the
+// kind, never the secret).
+export type WalletSummary = Account & { id: string; source?: 'phrase' | 'privateKey' };
 
 // Why a wallet couldn't be added. For duplicate, `conflict` names the wallet with that address;
 // for secret, `check` says what's wrong with the phrase or key.
@@ -303,6 +305,8 @@ export type Request =
   // Both take the password again, even while unlocked. The private key is the other piece of
   // key material a page receives, shown because the user asked to see it.
   | { type: 'wallets:exportKey'; id: string; password: string }
+  // The recovery phrase a wallet comes from, for one that came by its phrase. Takes the password too.
+  | { type: 'wallets:exportPhrase'; id: string; password: string }
   | { type: 'wallets:remove'; id: string; password: string }
   // The wallets in a new order, as the user dragged them: every wallet's id, once.
   | { type: 'wallets:reorder'; ids: string[] }
@@ -369,6 +373,11 @@ export type ResponseMap = {
   'wallets:create': WalletAddResult;
   'wallets:import': WalletAddResult;
   'wallets:exportKey': { ok: true; key: string } | ({ ok: false; error: 'wrong-password' } & WrongPassword);
+  // `wallets`: the names of every wallet the phrase restores, this one among them.
+  'wallets:exportPhrase':
+    | { ok: true; words: string[]; wallets: string[] }
+    | ({ ok: false; error: 'wrong-password' } & WrongPassword)
+    | { ok: false; error: 'no-phrase' };
   'wallets:remove': { ok: true } | ({ ok: false; error: 'wrong-password' } & WrongPassword) | { ok: false; error: 'last-wallet' };
   'security:getEraseAfter': { eraseAfter: number | null };
   'security:setEraseAfter': { ok: true } | ({ ok: false; error: 'wrong-password' } & WrongPassword) | { ok: false; error: 'no-wallet' };

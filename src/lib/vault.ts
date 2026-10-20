@@ -319,8 +319,18 @@ export function changePassword(current: string, next: string): Promise<boolean> 
 }
 
 // The active wallet is remembered unencrypted: an opaque id, telling nothing about the wallet.
+// The wallets as the session lists them: no secrets, only where each came from (phrase or key).
+function summaries(contents: VaultContents): WalletSummary[] {
+  return contents.wallets.map(({ id, name, address, keyring }) => ({
+    id,
+    name,
+    address,
+    source: contents.keyrings.find((item) => item.id === keyring)?.secret.kind === 'phrase' ? 'phrase' : 'privateKey',
+  }));
+}
+
 async function startSession(key: Uint8Array, contents: VaultContents) {
-  const wallets = contents.wallets.map(({ id, name, address }) => ({ id, name, address }));
+  const wallets = summaries(contents);
   const { activeWallet } = await browser.storage.local.get('activeWallet');
   const activeId = wallets.find((wallet) => wallet.id === activeWallet)?.id ?? wallets[0]!.id;
   await saveSession({ key: base64.encode(key), wallets, activeId, expiresAt: await autoLockAt() });
@@ -476,7 +486,7 @@ export function updateVault(change: (contents: VaultContents) => VaultContents):
       // The session follows; if the active wallet is gone, the first one takes over.
       const session = await readSession();
       if (session) {
-        const wallets = changed.wallets.map(({ id, name, address }) => ({ id, name, address }));
+        const wallets = summaries(changed);
         const activeId = wallets.some((wallet) => wallet.id === session.activeId) ? session.activeId : wallets[0]!.id;
         await saveSession({ ...session, wallets, activeId });
         await browser.storage.local.set({ activeWallet: activeId });

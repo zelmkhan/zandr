@@ -20,7 +20,7 @@
 
   // A new wallet takes two steps: its recovery phrase, written down (create), then its name
   // (create-name).
-  type Mode = 'list' | 'add' | 'create' | 'create-name' | 'phrase' | 'key' | 'export' | 'remove';
+  type Mode = 'list' | 'add' | 'create' | 'create-name' | 'phrase' | 'key' | 'export' | 'show-phrase' | 'remove';
   let mode = $state<Mode>('list');
 
   let wallets = $state<WalletSummary[]>([]);
@@ -53,15 +53,16 @@
     if (menuFor && !(event.target as Element).closest('.row-actions')) menuFor = null;
   }
 
-  // The wallet a private key or removal screen is about.
+  // The wallet a private key, recovery phrase or removal screen is about.
   let target = $state<WalletSummary | null>(null);
 
-  function open(next: 'export' | 'remove', wallet: WalletSummary) {
+  function open(next: 'export' | 'show-phrase' | 'remove', wallet: WalletSummary) {
     menuFor = null;
     target = wallet;
     password = '';
     understood = false;
     privateKey = '';
+    shownWords = [];
     error = null;
     mode = next;
   }
@@ -85,6 +86,43 @@
       error = { field: 'secret', message: "Couldn't show the key. Please try again." };
     } finally {
       busy = false;
+    }
+  }
+
+  // A wallet's recovery phrase, for one that came by it: and every wallet it restores.
+  let shownWords = $state<string[]>([]);
+  let phraseWallets = $state<string[]>([]);
+  let shownCopied = $state(false);
+
+  async function showPhrase(event: SubmitEvent) {
+    event.preventDefault();
+    busy = true;
+    error = null;
+    try {
+      const result = await sendToBackground({ type: 'wallets:exportPhrase', id: target!.id, password });
+      password = '';
+      if (result.ok) {
+        shownWords = result.words;
+        phraseWallets = result.wallets;
+        shownCopied = false;
+      } else if (result.error === 'no-phrase') {
+        error = { field: 'secret', message: 'This wallet came by its private key: it has no recovery phrase.' };
+      } else {
+        error = { field: 'secret', message: wrongPassword(result) };
+      }
+    } catch {
+      error = { field: 'secret', message: "Couldn't show the phrase. Please try again." };
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function copyShownPhrase() {
+    try {
+      await navigator.clipboard.writeText(shownWords.join(' '));
+      shownCopied = true;
+    } catch {
+      // The browser refused; the button stays as it was.
     }
   }
 
@@ -118,10 +156,14 @@
     }
   }
 
-  // The key never outlives the screen that showed it.
-  onDestroy(() => (privateKey = ''));
+  // The key and the phrase never outlive the screen that showed them.
+  onDestroy(() => {
+    privateKey = '';
+    shownWords = [];
+  });
   $effect(() => {
     if (mode !== 'export') privateKey = '';
+    if (mode !== 'show-phrase') shownWords = [];
   });
 
   // The address under a wallet's name copies it, without switching to it; its icon turns into a
@@ -317,13 +359,14 @@
     phrase: 'Import recovery phrase',
     key: 'Import private key',
     export: 'Private key',
+    'show-phrase': 'Recovery phrase',
     remove: 'Remove wallet',
   };
 
   function back() {
     if (mode === 'list') onback();
     else if (mode === 'create-name') mode = 'create';
-    else mode = mode === 'add' || mode === 'export' || mode === 'remove' ? 'list' : 'add';
+    else mode = mode === 'add' || mode === 'export' || mode === 'show-phrase' || mode === 'remove' ? 'list' : 'add';
   }
 </script>
 
@@ -423,6 +466,15 @@
 
             {#if menuFor === wallet.id}
               <div class="row-menu" class:up={menuUp} role="menu" aria-label="{wallet.name} options" transition:scale={{ duration: 120, start: 0.96 }}>
+                <!-- The phrase only for a wallet that came by it; one imported by its key has only the key. -->
+                {#if wallet.source === 'phrase'}
+                  <button type="button" role="menuitem" onclick={() => open('show-phrase', wallet)}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+                    </svg>
+                    Show recovery phrase
+                  </button>
+                {/if}
                 <button type="button" role="menuitem" onclick={() => open('export', wallet)}>
                   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                     <g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -524,6 +576,66 @@
           <p class="error" role="alert">{error.message}</p>
         {/if}
         <button type="submit" class="primary" disabled={!password || busy}>{busy ? 'Decrypting…' : 'Show private key'}</button>
+      </form>
+    {/if}
+  {:else if mode === 'show-phrase' && target}
+    <div class="warning">
+      <span class="warning-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0ZM12 9.5v4m0 3.5h.01"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+      <p>
+        <strong>Anyone with this phrase controls “{target.name}”</strong>, and every other wallet made from it. Never share it or
+        type it into a website. zandr will never ask for it.
+      </p>
+    </div>
+
+    {#if shownWords.length}
+      <div class="phrase-card">
+        <div class="phrase-head">
+          <span>Recovery phrase</span>
+          <button type="button" class="copy" onclick={copyShownPhrase}>{shownCopied ? 'Copied' : 'Copy'}</button>
+        </div>
+        <div class="phrase">
+          <ol class="words">
+            {#each shownWords as word, index (index)}
+              <li><span class="index">{index + 1}</span><span class="word">{word}</span></li>
+            {/each}
+          </ol>
+        </div>
+      </div>
+      {#if phraseWallets.length > 1}
+        <p class="note">It restores all of these wallets: {phraseWallets.join(', ')}.</p>
+      {/if}
+      <!-- Other apps can read the clipboard, and clipboard sync can carry it to the cloud. -->
+      {#if shownCopied}
+        <p class="note" role="status">Paste it somewhere safe and offline, then copy something else over it.</p>
+      {/if}
+      <p class="note">It's hidden again when you leave this screen.</p>
+    {:else}
+      <form class="form" onsubmit={showPhrase}>
+        <label class="field">
+          <span>Password</span>
+          <input
+            type="password"
+            bind:value={password}
+            oninput={() => (error = null)}
+            aria-invalid={error ? 'true' : undefined}
+            autocomplete="current-password"
+          />
+        </label>
+        {#if error}
+          <p class="error" role="alert">{error.message}</p>
+        {/if}
+        <button type="submit" class="primary" disabled={!password || busy}>{busy ? 'Decrypting…' : 'Show recovery phrase'}</button>
       </form>
     {/if}
   {:else if mode === 'remove' && target}

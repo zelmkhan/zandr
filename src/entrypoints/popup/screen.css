@@ -181,6 +181,16 @@
   word-break: break-all;
 }
 
+/* A password field: its dots as large as on the unlock screen (assets/theme.css), and its height
+   kept while they are. */
+.screen .field input[type='password'] {
+  height: 48px;
+  padding: 0 12px;
+  font-size: 28px;
+  letter-spacing: 1px;
+  line-height: normal;
+}
+
 .screen .field input::placeholder,
 .screen .field textarea::placeholder {
   color: rgba(var(--ink), 0.3);

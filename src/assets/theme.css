@@ -122,3 +122,33 @@ textarea {
     transition: none !important;
   }
 }
+
+/*
+ * Geist with custom vertical metrics for password fields. The caret is as tall as
+ * ascent + descent (104% instead of Geist's 130%), and the split puts the caret's center
+ * exactly on the dots, or on the placeholder text while the field is empty, so both
+ * sit dead center in the field with no padding tweaks.
+ */
+@font-face {
+  font-family: 'Geist Password';
+  src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  ascent-override: 82.7%;
+  descent-override: 21.3%;
+}
+
+@font-face {
+  font-family: 'Geist Password Empty';
+  src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  ascent-override: 74.9%;
+  descent-override: 29.1%;
+}
+
+/* The wallet's password, wherever it's typed: dots as large as on the unlock screen (28 px). The
+   fonts above keep them centred in a field of fixed height; shown as text, it's the field's own. */
+input[type='password'] {
+  font-family: 'Geist Password', 'Geist Variable', system-ui, sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
