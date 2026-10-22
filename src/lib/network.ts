@@ -3,7 +3,7 @@
 export type NetworkId = 'mainnet' | 'devnet';
 
 // zandr's server (api/): the default mainnet node and tokens' logos.
-export const ZANDR_API = 'https://api-production-3931.up.railway.app';
+export const ZANDR_API = 'https://api.zandr.xyz';
 
 // Mainnet's default node is zandr's own RPC proxy (api/rpc.ts): it forwards the wallet's requests
 // to zandr's RPC provider, whose key stays on the server. Solana's public mainnet node refuses

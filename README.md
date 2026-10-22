@@ -72,7 +72,7 @@ website/              project website: separate Astro project, see website/READM
 ## zandr's API server
 
 `src/server` runs in the extension's background, and the same code also runs on zandr's server
-(`api/`), deployed on Railway (project **Zandr**, service **api**): https://api-production-3931.up.railway.app.
+(`api/`), deployed on Railway (project **Zandr**, service **api**): https://api.zandr.xyz.
 Node runs the TypeScript as it is, with no dependencies; the image holds `src/server` and `api/` only. The extension
 also fetches tokens' logos and the exchanges' token lists from it, even with a custom RPC endpoint.
 

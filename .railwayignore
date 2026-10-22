@@ -2,6 +2,7 @@
 # Patterns start with / so they only match at the repo root: railway up from website/
 # reads this file too, and a bare "public/" would drop the site's public/ folder.
 /website/
+/mobile/
 /public/
 /.output/
 /.wxt/

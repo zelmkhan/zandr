@@ -19,7 +19,8 @@ const ROUTES: Record<string, { method: 'GET' | 'POST'; keepMs: number }> = {
   '/swap/v1/swap': { method: 'POST', keepMs: 0 },
 };
 
-const MAX_QUERY = 4096;
+// A query naming up to 100 mints (a token lookup) fits.
+const MAX_QUERY = 8192;
 const MAX_BODY = 64 * 1024;
 const TIMEOUT_MS = 15_000;
 const KEPT = 5_000;

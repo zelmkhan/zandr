@@ -13,8 +13,9 @@ export const JUPITER_PUBLIC: JupiterConfig = { url: 'https://lite-api.jup.ag', r
 // How long requests go to the fallback after the usual place couldn't answer.
 const FALLBACK_MS = 10 * 60_000;
 
-// The most mints one request may name: token search returns at most 100 results.
-const INFO_BATCH = 100;
+// The most mints one request may name: token search returns at most 100 results, and 80 keep the
+// query under 4 KB, which zandr's server takes (a mint is up to 44 characters and a comma).
+const INFO_BATCH = 80;
 const PRICE_BATCH = 50;
 const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 

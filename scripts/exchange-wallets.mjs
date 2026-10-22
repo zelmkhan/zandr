@@ -17,7 +17,7 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const file = join(root, 'src/server/exchangeWallets.json');
-const RPC = process.env.SOLANA_RPC_MAINNET || 'https://api-production-3931.up.railway.app/rpc/mainnet';
+const RPC = process.env.SOLANA_RPC_MAINNET || 'https://api.zandr.xyz/rpc/mainnet';
 const ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
 async function json(url) {

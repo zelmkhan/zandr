@@ -25,6 +25,9 @@ web-ext.config.ts
 *.sln
 *.sw?
 
+# The roadmap: private notes, kept locally
+/ROADMAP.md
+
 # Secrets for local scripts (exchange API keys): never committed
 .env*
 
