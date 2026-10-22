@@ -19,33 +19,55 @@ class ChainError implements Exception {
   String toString() => 'RPC ${reason.name}${detail == null ? '' : ': $detail'}';
 }
 
+// How long calls go to the fallback node once zandr's couldn't answer; then zandr's is tried again.
+const _fallbackFor = Duration(minutes: 10);
+
 class Rpc {
   final String url;
   final http.Client _client;
-  Rpc(this.url, [http.Client? client]) : _client = client ?? http.Client();
+  // Helius's public node, standing in for zandr's own (mainnet's private default) while that one
+  // can't answer: down, failing, or over its limits.
+  final String? fallback;
+  DateTime _fallbackUntil = DateTime(0);
+  Rpc(this.url, [http.Client? client]) : _client = client ?? http.Client(), fallback = url == defaultRpc[Network.mainnet] ? publicRpcMainnet : null;
 
-  // A request turned away for going too fast is tried twice more, a moment later each time.
+  // The node calls go to now, and the socket connects to.
+  String get endpoint => fallback != null && DateTime.now().isBefore(_fallbackUntil) ? fallback! : url;
+
+  // A request turned away for going too fast is tried twice more, a moment later each time. One
+  // zandr's node couldn't answer goes to the fallback at once.
   Future<T> call<T>(String method, List<Object?> params) async {
-    for (var attempt = 0;; attempt++) {
+    var limited = 0;
+    while (true) {
+      final node = endpoint;
       try {
-        return await _call<T>(method, params);
+        return await _call<T>(method, params, node);
       } on ChainError catch (error) {
-        if (attempt == 2 || error.reason != RpcFailure.rateLimited) rethrow;
-        await Future<void>.delayed(Duration(seconds: attempt + 1));
+        final unanswered = error.reason == RpcFailure.unreachable || error.reason == RpcFailure.rateLimited;
+        if (fallback != null && node == url && unanswered) {
+          _fallbackUntil = DateTime.now().add(_fallbackFor);
+          continue;
+        }
+        if (limited == 2 || error.reason != RpcFailure.rateLimited) rethrow;
+        limited++;
+        await Future<void>.delayed(Duration(seconds: limited));
       }
     }
   }
 
-  Future<T> _call<T>(String method, List<Object?> params) async {
+  Future<T> _call<T>(String method, List<Object?> params, [String? node]) async {
     http.Response response;
     try {
       response = await _client
-          .post(Uri.parse(url), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params}))
+          .post(Uri.parse(node ?? url), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params}))
           .timeout(const Duration(seconds: 15));
     } on Exception {
       throw const ChainError(RpcFailure.unreachable);
     }
-    if (serverAbsent(response)) throw const ChainError(RpcFailure.unreachable);
+    // Not running (Railway answers in its place), or a gateway that couldn't reach the node.
+    if (serverAbsent(response) || response.statusCode == 502 || response.statusCode == 503 || response.statusCode == 504) {
+      throw const ChainError(RpcFailure.unreachable);
+    }
     if (response.statusCode == 401 || response.statusCode == 403) throw const ChainError(RpcFailure.forbidden);
     if (response.statusCode == 429) throw const ChainError(RpcFailure.rateLimited);
     Object? body;

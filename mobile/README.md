@@ -4,7 +4,11 @@ The Zandr wallet as a Flutter app, iOS first. It is the extension's wallet carri
 keys from the same recovery phrase, the same transfer protections and the same swap checks. It has
 no password of its own: Face ID or the iPhone's passcode unlocks it. It also talks to the same
 server (zandr's API on Railway) for the default Solana node, Jupiter, token logos and the
-exchanges' token lists.
+exchanges' token lists. With Settings → Network → Public on Mainnet, it uses none of that server:
+Helius's node under a public key, Jupiter's public API and logos through the wsrv.nl image proxy.
+Only the exchanges' token lists still come from it, fetched whole every 12 hours (three tries at a
+time), so it learns nothing about the wallet. With Private (the default), while that server can't
+answer, the same public services stand in for ten minutes at a time.
 
 ## Security
 

@@ -30,11 +30,12 @@ List<Map<String, Object>> _subscriptions(String address) {
   ];
 }
 
-// Watches `address` through the node at `rpc` until stopped: `refresh` is called with the slot of
-// the change (null when polling or just connected).
+// Watches `address` through the node `rpc` gives (asked at each connection: zandr's, or the one
+// standing in for it) until stopped: `refresh` is called with the slot of the change (null when
+// polling or just connected).
 class LiveWatch {
   final String address;
-  final String url;
+  final String Function() rpc;
   final void Function(int? changedIn) refresh;
   WebSocketChannel? _socket;
   StreamSubscription<dynamic>? _listening;
@@ -43,7 +44,7 @@ class LiveWatch {
   int _failures = 0, _subscribed = 0, _slot = 0;
   DateTime _heard = DateTime.now();
 
-  LiveWatch(this.address, String rpc, this.refresh) : url = socketUrl(rpc) {
+  LiveWatch(this.address, this.rpc, this.refresh) {
     _poll = Timer.periodic(_pollEvery, (_) {
       if (!_live) refresh(null);
     });
@@ -54,7 +55,7 @@ class LiveWatch {
     _subscribed = 0;
     final requests = _subscriptions(address);
     try {
-      final socket = WebSocketChannel.connect(Uri.parse(url));
+      final socket = WebSocketChannel.connect(Uri.parse(socketUrl(rpc())));
       _socket = socket;
       _listening = socket.stream.listen((data) => _receive(data, requests.length), onDone: _drop, onError: (_) => _drop(), cancelOnError: true);
       socket.ready.then((_) {

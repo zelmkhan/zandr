@@ -8,6 +8,7 @@ import { socketUrl } from '@/lib/live';
 import type { ResponseMap } from '@/lib/messages';
 import { loadPreferences } from '@/lib/preferences';
 import { rpc } from '@/lib/solana/rpc';
+import { nodeFor } from '@/lib/network';
 import type { Network } from '@/server/api';
 
 // A transaction on its way, kept while unlocked so it can be sent again until it lands or expires.
@@ -42,7 +43,7 @@ export async function trackSent(url: string, signature: string, pending: Pending
 
 function watch(rpcUrl: string, signature: string) {
   if (watches.has(signature)) return;
-  const url = socketUrl(rpcUrl);
+  const url = socketUrl(nodeFor(rpcUrl));
   const entry: Watch = { settled: Promise.resolve(null) };
   watches.set(signature, entry);
   entry.settled = new Promise<Landing | null>((resolve) => {

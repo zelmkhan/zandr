@@ -88,14 +88,14 @@ Future<Portfolio> getPortfolio(Rpc rpc, Jupiter jupiter, Network network, String
   final solPrice = priced(wrappedSol, solBalance);
   final sol = Coin(
     mint: wrappedSol, native: true, program: 'system', amount: '$lamports', decimals: 9, balance: solBalance,
-    name: 'Solana', symbol: 'SOL', logo: '$logoServer/$wrappedSol', verified: true,
+    name: 'Solana', symbol: 'SOL', logo: jupiter.logo(wrappedSol), verified: true,
     price: solPrice.price, value: solPrice.value, change24h: solPrice.change24h,
   );
 
   final tokens = <Coin>[];
   for (final MapEntry(key: mint, value: holding) in holdings.entries) {
     // Wrapped SOL that some swaps leave behind gets its own name, so it isn't taken for SOL itself.
-    final info = mint == wrappedSol ? TokenInfo(name: 'Wrapped SOL', symbol: 'wSOL', logo: '$logoServer/$wrappedSol', verified: true, traded: true) : infos[mint];
+    final info = mint == wrappedSol ? TokenInfo(name: 'Wrapped SOL', symbol: 'wSOL', logo: jupiter.logo(wrappedSol), verified: true, traded: true) : infos[mint];
     final p = priced(mint, holding.balance);
     tokens.add(Coin(
       mint: mint, native: false, program: holding.program, amount: '${holding.amount}', decimals: holding.decimals, balance: holding.balance,

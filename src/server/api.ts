@@ -123,7 +123,7 @@ export type AddressInfo = {
 export type TransferCheck = {
   exchange: string | null;
   kind: 'hot-wallet' | 'deposit' | null;
-  // `paused`: the exchange wasn't taking deposits of it when a recent list was fetched. `basis`:
+  // `paused`: the exchange wasn't taking deposits of it when its list was fetched. `basis`:
   // whether the list is of the tokens it takes on Solana, or (from CoinGecko) of the ones it trades.
   listed: { accepted: boolean; coin: string | null; depositMin: string | null; paused: boolean; basis: 'deposits' | 'trading' } | null;
 };

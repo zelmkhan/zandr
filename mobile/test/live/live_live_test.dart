@@ -13,7 +13,7 @@ void main() {
   test('changes of a busy wallet arrive over the socket', () async {
     final slots = <int?>[];
     final changed = Completer<void>();
-    final watch = LiveWatch('5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9', defaultRpc[Network.mainnet]!, (slot) {
+    final watch = LiveWatch('5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9', () => defaultRpc[Network.mainnet]!, (slot) {
       slots.add(slot);
       if (slot != null && !changed.isCompleted) changed.complete();
     });

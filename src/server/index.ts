@@ -10,7 +10,7 @@ import { ApiError, type Api, type Network, type TokenSummary } from './api.ts';
 import type { Fetch } from './http.ts';
 import shipped from './exchangeTokens.json' with { type: 'json' };
 import { exchangeVerdict, type ExchangeTokenList } from './exchangeTokens.ts';
-import { createJupiter, iconSource, type JupiterConfig } from './jupiter.ts';
+import { createJupiter, iconSource, type JupiterConfig, type Logos } from './jupiter.ts';
 import { getAssetImage } from './rpc.ts';
 import { getPortfolio } from './portfolio.ts';
 
@@ -23,9 +23,13 @@ export type ApiConfig = {
   jupiter?: JupiterConfig;
   // Exchanges' hot wallets, address → exchange, instead of the list in hotWallets.ts.
   hotWallets?: Record<string, string>;
-  // zandr's logo server (`…/v1/logo`, by mint): tokens' logos come from there, so no token's
-  // creator learns who looks at it. Without it, only verified tokens get a logo.
-  logos?: string;
+  // zandr's logo server (`…/v1/logo`, by mint), or an image proxy (a logo's URL through it, from
+  // where its creator put it): tokens' logos come from there, so no token's creator learns who
+  // looks at it. Without either, only verified tokens get a logo.
+  logos?: Logos;
+  // The logos while Jupiter's requests go to its fallback: zandr's server, logo server included,
+  // can't answer.
+  fallbackLogos?: Logos;
   // The exchanges' token lists to go by, fresher than the snapshot that ships
   // (exchangeTokens.json), if there are any: asked for at each transfer check.
   exchangeTokens?: () => ExchangeTokenList[] | Promise<ExchangeTokenList[]>;
@@ -35,7 +39,7 @@ export type ApiConfig = {
 export function createApi(config: ApiConfig): Api {
   // A wrapper, not fetch itself: called detached from its global, fetch throws in some runtimes.
   const fetcher: Fetch = config.fetch ?? ((input, init) => fetch(input, init));
-  const jupiter = createJupiter(fetcher, config.jupiter, config.logos);
+  const jupiter = createJupiter(fetcher, config.jupiter, config.logos, config.fallbackLogos);
   const addressInfo = createExchanges({ fetch: fetcher, rpc: config.rpc, hotWallets: config.hotWallets ?? HOT_WALLETS });
 
   return {

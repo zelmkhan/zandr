@@ -1,7 +1,8 @@
 // The exchanges' token lists the wallet goes by (src/lib/exchangeTokens.ts): the snapshot that ships
 // with the app, or, where fresher, the lists zandr's server keeps up to date. Those are fetched whole
 // every 12 hours, so the server learns nothing about anyone's transfers, checked field by field, and
-// kept with the preferences (public data).
+// kept with the preferences (public data). With public services too: they're the one thing still
+// asked of zandr's server.
 import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
@@ -12,11 +13,15 @@ import '../core/exchanges.dart';
 import 'preferences.dart';
 
 const _every = Duration(hours: 12);
+// Tries at a time, `pause` apart (twice as long before the last): a server that can't answer
+// isn't asked again until `maxAge` has passed since.
+const _tries = 3;
 
 class ExchangeLists {
   final PreferenceStore store;
   final http.Client _client;
-  ExchangeLists(this.store, [http.Client? client]) : _client = client ?? http.Client();
+  final Duration pause;
+  ExchangeLists(this.store, [http.Client? client, this.pause = const Duration(seconds: 2)]) : _client = client ?? http.Client();
 
   List<ExchangeTokenList>? _shipped;
   Map<String, String>? _hotWallets;
@@ -49,25 +54,41 @@ class ExchangeLists {
     return exchangeCoverage([for (final exchange in (wallets['exchanges'] as List).cast<Map>()) exchange['name'] as String], await lists());
   }
 
-  // Fetches fresh lists unless they were fetched within `maxAge`; true if new ones came. A failed
-  // fetch keeps what's there.
+  Future<DateTime> _triedAt() async => DateTime.fromMillisecondsSinceEpoch(int.tryParse(await store.readText('exchangeTokensTriedAt') ?? '') ?? 0);
+
+  // Fetches fresh lists unless they were fetched, or tried for, within `maxAge`; true if new ones
+  // came. A failed fetch keeps what's there.
   Future<bool> refresh([Duration maxAge = _every]) async {
     final (:checkedAt, lists: _) = await _stored();
-    if (DateTime.now().difference(checkedAt) < maxAge) return false;
-    try {
-      final response = await _client.get(Uri.parse('$zandrApi/v1/exchange-tokens')).timeout(const Duration(seconds: 15));
+    final tried = await _triedAt();
+    final now = DateTime.now();
+    if (now.difference(checkedAt.isAfter(tried) ? checkedAt : tried) < maxAge) return false;
+    await store.writeText('exchangeTokensTriedAt', '${now.millisecondsSinceEpoch}');
+    for (var attempt = 1; attempt <= _tries; attempt++) {
+      if (attempt > 1) await Future<void>.delayed(pause * (attempt - 1));
+      http.Response response;
+      try {
+        response = await _client.get(Uri.parse('$zandrApi/v1/exchange-tokens')).timeout(const Duration(seconds: 15));
+      } catch (_) {
+        // Offline, or the server is down.
+        continue;
+      }
+      // Not running, failing or busy: worth another try. Any other answer stands.
+      if (serverAbsent(response) || response.statusCode >= 500 || response.statusCode == 429) continue;
       if (response.statusCode != 200) return false;
-      final data = jsonDecode(response.body);
-      final checked = validLists(data);
-      if (checked == null) return false;
-      await store.writeText('exchangeTokens', jsonEncode({
-        'checkedAt': DateTime.now().millisecondsSinceEpoch,
-        'data': {'updated': (data as Map)['updated'], 'lists': [for (final list in checked) list.toJson()]},
-      }));
-      return true;
-    } catch (_) {
-      // Offline, or the server is down.
-      return false;
+      try {
+        final data = jsonDecode(response.body);
+        final checked = validLists(data);
+        if (checked == null) return false;
+        await store.writeText('exchangeTokens', jsonEncode({
+          'checkedAt': DateTime.now().millisecondsSinceEpoch,
+          'data': {'updated': (data as Map)['updated'], 'lists': [for (final list in checked) list.toJson()]},
+        }));
+        return true;
+      } catch (_) {
+        return false;
+      }
     }
+    return false;
   }
 }

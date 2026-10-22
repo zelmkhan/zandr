@@ -20,8 +20,12 @@ export type Preferences = {
   // The toolbar button opens the wallet in Chrome's side panel instead of the popup.
   sidePanel: boolean;
   network: NetworkId;
-  // A custom RPC URL per network, or null for zandr's default one.
+  // A custom RPC URL per network, or null for the default one.
   rpc: Record<NetworkId, string | null>;
+  // Public services in place of zandr's server: Helius as mainnet's default node, and Jupiter and
+  // tokens' logos asked for directly (only the exchanges' token lists still come from zandr's
+  // server). A custom node, where set, is still the one used.
+  publicServices: boolean;
   autoLockMinutes: number;
   protection: Record<ProtectionId, boolean>;
 };
@@ -37,6 +41,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   sidePanel: false,
   network: 'mainnet',
   rpc: { mainnet: null, devnet: null },
+  publicServices: false,
   autoLockMinutes: 15,
   // All on unless the user turns one off.
   protection: {
@@ -58,6 +63,7 @@ export async function loadPreferences(): Promise<Preferences> {
       ...saved,
       theme: THEME_CHOICES.includes(saved?.theme as Theme) ? (saved!.theme as Theme) : DEFAULT_PREFERENCES.theme,
       rpc: { ...DEFAULT_PREFERENCES.rpc, ...saved?.rpc },
+      publicServices: saved?.publicServices === true,
       // Only the protections that exist now: one removed later drops out instead of lingering.
       protection: Object.fromEntries(
         Object.entries(DEFAULT_PREFERENCES.protection).map(([id, on]) => [id, saved?.protection?.[id as ProtectionId] ?? on]),

@@ -6,10 +6,16 @@
 
   const network = $derived(preferences.network);
   const custom = $derived(preferences.rpc[network]);
-  const endpoint = $derived(rpcUrl(network, preferences.rpc));
+  const endpoint = $derived(rpcUrl(network, preferences));
 
   // Editing a custom endpoint: opened by choosing Custom, closed by saving or cancelling.
   let editing = $state(false);
+
+  // The node in use: the default one (zandr's on mainnet, Solana's on devnet), public services
+  // (mainnet only), or the user's own.
+  const node = $derived(editing || custom ? 'custom' : network === 'mainnet' && preferences.publicServices ? 'public' : 'default');
+  // Public services are mainnet's: devnet's choice leaves them as they are.
+  const services = (on: boolean): Partial<Preferences> => (network === 'mainnet' ? { publicServices: on } : {});
   let draft = $state('');
   let error = $state('');
   let busy = $state(false);
@@ -42,7 +48,13 @@
   function useDefault() {
     editing = false;
     error = '';
-    updatePreferences({ rpc: { ...preferences.rpc, [network]: null } });
+    updatePreferences({ rpc: { ...preferences.rpc, [network]: null }, ...services(false) });
+  }
+
+  function usePublic() {
+    editing = false;
+    error = '';
+    updatePreferences({ rpc: { ...preferences.rpc, mainnet: null }, publicServices: true });
   }
 
   function startCustom() {
@@ -73,7 +85,8 @@
           : `This endpoint isn't on Solana ${expected}.`;
         return;
       }
-      await updatePreferences({ rpc: { ...preferences.rpc, [network]: url } });
+      // Your own node in place of public services, so Jupiter goes through zandr's server again.
+      await updatePreferences({ rpc: { ...preferences.rpc, [network]: url }, ...services(false) });
       check = { url, state: 'ok', probe };
       editing = false;
     } catch (cause) {
@@ -117,12 +130,20 @@
 <div class="card rows">
   <div class="row">
     <div class="row-text">
-      <strong>{custom ? 'Custom' : 'Default'}</strong>
-      <span class="url">{endpoint}</span>
+      <strong>{node === 'custom' ? 'Custom' : node === 'public' ? 'Public' : network === 'mainnet' ? 'Private' : 'Default'}</strong>
+      {#if node === 'public'}
+        <span>Helius, with Jupiter and logos asked directly</span>
+      {:else}
+        <span class="url">{endpoint}</span>
+      {/if}
     </div>
     <div class="segmented" role="group" aria-label="RPC endpoint">
-      <button type="button" aria-pressed={!custom && !editing} onclick={useDefault}>Default</button>
-      <button type="button" aria-pressed={Boolean(custom) || editing} onclick={startCustom}>Custom</button>
+      <!-- zandr's node keeps no record of who asks what; devnet's default is Solana's public one. -->
+      <button type="button" aria-pressed={node === 'default'} onclick={useDefault}>{network === 'mainnet' ? 'Private' : 'Default'}</button>
+      {#if network === 'mainnet'}
+        <button type="button" aria-pressed={node === 'public'} onclick={usePublic}>Public</button>
+      {/if}
+      <button type="button" aria-pressed={node === 'custom'} onclick={startCustom}>Custom</button>
     </div>
   </div>
 
@@ -172,8 +193,9 @@
 </div>
 
 <p class="note">
-  Your RPC provider can see the addresses zandr looks up and the transactions it sends. Use one you trust. On Mainnet, Default
-  goes through zandr's server, which passes requests on to its RPC provider and logs none of them.
+  Your RPC provider can see the addresses zandr looks up and the transactions it sends. Use one you trust. On Mainnet, Private
+  goes through zandr's server, which passes requests on to its RPC provider and logs none of them. Public goes to Helius and
+  Jupiter directly; only the exchanges' token lists still come from zandr's server, whole, so it learns nothing about your wallet.
 </p>
 
 <style>

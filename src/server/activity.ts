@@ -276,7 +276,7 @@ export async function getActivity(
     if (!reading) return [];
     const changes: ActivityChange[] = reading.moves.map(({ mint, delta, decimals }) => {
       const amount = `${delta < 0n ? '-' : '+'}${formatUnits(delta < 0n ? -delta : delta, decimals)}`;
-      if (mint === null) return { mint: null, amount, symbol: 'SOL', logo: deps.jupiter.logoOf(WRAPPED_SOL) ?? SOL_LOGO, verified: true };
+      if (mint === null) return { mint: null, amount, symbol: 'SOL', logo: deps.jupiter.logoOf(WRAPPED_SOL, SOL_LOGO) ?? SOL_LOGO, verified: true };
       const info = infos.get(mint) ?? null;
       return { mint, amount, symbol: info?.symbol ?? null, logo: info?.logo ?? null, verified: info?.verified ?? false };
     });

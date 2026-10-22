@@ -19,8 +19,12 @@ class Preferences {
   // Coins worth less than this many US dollars are left out of the home screen's list; 0 shows all.
   final double minCoinValue;
   final Network network;
-  // A custom RPC URL per network, or none for zandr's default one.
+  // A custom RPC URL per network, or none for the default one.
   final Map<Network, String> rpc;
+  // Public services in place of zandr's server: Helius as mainnet's default node, and Jupiter and
+  // token logos asked for directly (only the exchanges' token lists still come from zandr's
+  // server). A custom node, where set, is still the one used.
+  final bool publicServices;
   final int autoLockMinutes;
   final Set<Protection> protections;
   // The wallet shown, by its id in the vault (an opaque id that says nothing about it).
@@ -32,12 +36,13 @@ class Preferences {
     this.minCoinValue = 0,
     this.network = Network.mainnet,
     this.rpc = const {},
+    this.publicServices = false,
     this.autoLockMinutes = 5,
     this.protections = const {...Protection.values},
     this.activeWallet,
   });
 
-  String rpcUrl(Network network) => rpc[network] ?? defaultRpc[network]!;
+  String rpcUrl(Network network) => rpc[network] ?? (network == Network.mainnet && publicServices ? publicRpcMainnet : defaultRpc[network]!);
 
   Preferences copyWith({
     ThemeChoice? theme,
@@ -45,6 +50,7 @@ class Preferences {
     double? minCoinValue,
     Network? network,
     Map<Network, String>? rpc,
+    bool? publicServices,
     int? autoLockMinutes,
     Set<Protection>? protections,
     String? Function()? activeWallet,
@@ -55,6 +61,7 @@ class Preferences {
         minCoinValue: minCoinValue ?? this.minCoinValue,
         network: network ?? this.network,
         rpc: rpc ?? this.rpc,
+        publicServices: publicServices ?? this.publicServices,
         autoLockMinutes: autoLockMinutes ?? this.autoLockMinutes,
         protections: protections ?? this.protections,
         activeWallet: activeWallet == null ? this.activeWallet : activeWallet(),
@@ -66,6 +73,7 @@ class Preferences {
         'minCoinValue': minCoinValue,
         'network': network.name,
         'rpc': {for (final MapEntry(:key, :value) in rpc.entries) key.name: value},
+        'publicServices': publicServices,
         'autoLockMinutes': autoLockMinutes,
         'protections': {for (final protection in Protection.values) protection.name: protections.contains(protection)},
         'activeWallet': activeWallet,
@@ -87,6 +95,7 @@ class Preferences {
           for (final MapEntry(:key, :value) in (json['rpc'] as Map).entries)
             if (Network.values.asNameMap()[key] != null && value is String) Network.values.asNameMap()[key]!: value,
       },
+      publicServices: pick('publicServices', false),
       autoLockMinutes: autoLockChoices.contains(json['autoLockMinutes']) ? json['autoLockMinutes'] as int : defaults.autoLockMinutes,
       // Only the protections that exist now, each on unless turned off.
       protections: {for (final protection in Protection.values) if (protections[protection.name] != false) protection},

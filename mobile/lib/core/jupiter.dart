@@ -1,7 +1,8 @@
 // Token names, logos and prices, token search and swaps, from Jupiter (src/server/jupiter.ts).
 // Requests go through zandr's server, under its key and rate limit; while that server can't
-// answer, straight to Jupiter's public API for ten minutes. Jupiter says with each answer how much
-// of its rate-limit window is left: once it's used up, nothing more goes out until it resets.
+// answer, straight to Jupiter's public API for ten minutes. With public services, always straight
+// to Jupiter's public API. Jupiter says with each answer how much of its rate-limit window is
+// left: once it's used up, nothing more goes out until it resets.
 import 'dart:async';
 import 'dart:convert';
 
@@ -31,13 +32,55 @@ String? cleanText(Object? text, int max) {
 final _borrowed = 'SOL WSOL USDC USDT USDS USDE USDG PYUSD EURC JUP JTO PYTH BONK WIF RAY ORCA MSOL JITOSOL BSOL JUPSOL INF ETH WETH BTC WBTC CBBTC TRUMP POPCAT SOLANA USDCOIN TETHER BITCOIN ETHEREUM JUPITER WRAPPEDSOL'.split(' ').toSet();
 String _plain(String? text) => unorm.nfkc(text ?? '').toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
 
-// Every logo comes from zandr's logo server, by mint, so a token's creator never sees who looks.
-String? logoFor(String mint, {required bool verified, String? symbol, String? name}) {
-  if (!verified && (_borrowed.contains(_plain(symbol)) || _borrowed.contains(_plain(name)))) return null;
-  return '$logoServer/$mint';
+// The logos public services can't look up by mint: the ones the app shows before Jupiter answers.
+const _knownIcons = {
+  wrappedSol: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+  usdcMint: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+};
+
+// Where a token's logo is, as its creator put it: https, or IPFS and Arweave by their gateways.
+String? iconSource(Object? icon) {
+  if (icon is! String) return null;
+  final url = Uri.tryParse(icon.trim());
+  if (url == null || url.host.isEmpty) return null;
+  return switch (url.scheme) {
+    'ipfs' => 'https://ipfs.io/ipfs/${url.host}${url.path}',
+    'ar' => 'https://arweave.net/${url.host}${url.path}',
+    'https' => url.toString(),
+    _ => null,
+  };
 }
 
-TokenInfo parseToken(Map<String, dynamic> token) {
+// The file an IPFS address names, whichever gateway it's on: /ipfs/<cid>/… on the gateway's own
+// host, or <cid>.ipfs.<gateway>.
+String? _ipfsFile(String source) {
+  final url = Uri.parse(source);
+  final path = RegExp(r'^/ipfs/([A-Za-z0-9]+)(/.*)?$').firstMatch(url.path);
+  if (path != null) return '${path[1]}${path[2] ?? ''}';
+  final subdomain = RegExp(r'^([a-z0-9]+)\.ipfs\.').firstMatch(url.host);
+  return subdomain == null ? null : '${subdomain[1]}${url.path == '/' ? '' : url.path}';
+}
+
+// IPFS gateways that let wsrv.nl fetch from them: ipfs.io, which most tokens name, turns it away.
+const _ipfsGateways = ['https://ipfs.filebase.io/ipfs/', 'https://4everland.io/ipfs/'];
+
+// A token's logo: from zandr's logo server by mint, or, with public services, the image its
+// creator named (`icon`, as Jupiter gives it) through wsrv.nl, an IPFS one from one gateway and
+// then the other. Either way the creator's host never sees who looks.
+String? tokenLogo(String mint, {Object? icon, bool public = false}) {
+  if (!public) return '$logoServer/$mint';
+  final source = iconSource(icon ?? _knownIcons[mint]);
+  if (source == null) return null;
+  final file = _ipfsFile(source);
+  return file == null ? proxiedLogo(source) : proxiedLogo('${_ipfsGateways[0]}$file', fallback: proxiedLogo('${_ipfsGateways[1]}$file'));
+}
+
+String? logoFor(String mint, {required bool verified, String? symbol, String? name, Object? icon, bool public = false}) {
+  if (!verified && (_borrowed.contains(_plain(symbol)) || _borrowed.contains(_plain(name)))) return null;
+  return tokenLogo(mint, icon: icon, public: public);
+}
+
+TokenInfo parseToken(Map<String, dynamic> token, {bool public = false}) {
   final verified = token['isVerified'] == true;
   final name = cleanText(token['name'], 48);
   final symbol = cleanText(token['symbol'], 16);
@@ -46,7 +89,7 @@ TokenInfo parseToken(Map<String, dynamic> token) {
   return TokenInfo(
     name: name,
     symbol: symbol,
-    logo: logoFor(token['id'] as String, verified: verified, symbol: symbol, name: name),
+    logo: logoFor(token['id'] as String, verified: verified, symbol: symbol, name: name, icon: token['icon'], public: public),
     verified: verified,
     decimals: decimals is int && decimals >= 0 && decimals <= 255 ? decimals : null,
     traded: price is num && price > 0,
@@ -92,7 +135,17 @@ class SwapBuild {
 
 class Jupiter {
   final http.Client _client;
-  Jupiter([http.Client? client]) : _client = client ?? http.Client();
+  // Public services: Jupiter's public API only, and logos to match.
+  final bool public;
+  Jupiter([http.Client? client]) : _client = client ?? http.Client(), public = false;
+  Jupiter.publicApi([http.Client? client]) : _client = client ?? http.Client(), public = true;
+
+  // Public services, or zandr's server not answering for now: logos from where they are, through
+  // the image proxy, as zandr's logo server is on that server too.
+  bool get _direct => public || DateTime.now().isBefore(_fallbackUntil);
+
+  // A known token's logo (SOL's, USDC's), shown before Jupiter has answered.
+  String? logo(String mint) => tokenLogo(mint, public: _direct);
 
   final _infos = <String, _Cached<TokenInfo?>>{};
   final _prices = <String, _Cached<Price?>>{};
@@ -102,7 +155,7 @@ class Jupiter {
   // Requests on their way, by path: the same one asked again meanwhile waits for that answer.
   final _inflight = <String, Future<Object?>>{};
 
-  String get _base => DateTime.now().isBefore(_fallbackUntil) ? jupiterPublic : jupiterViaZandr;
+  String get _base => public || DateTime.now().isBefore(_fallbackUntil) ? jupiterPublic : jupiterViaZandr;
 
   void _heed(http.Response response) {
     final reset = int.tryParse(response.headers['x-ratelimit-reset'] ?? '');
@@ -126,6 +179,7 @@ class Jupiter {
   }
 
   Future<Object?> _send(String path, {Map<String, dynamic>? body}) async {
+    var dropped = 0;
     for (var attempt = 0;; attempt++) {
       final wait = _heldUntil.difference(DateTime.now());
       if (!wait.isNegative) await Future<void>.delayed(wait);
@@ -137,9 +191,14 @@ class Jupiter {
                 ? _client.get(uri)
                 : _client.post(uri, headers: {'Content-Type': 'application/json'}, body: jsonEncode(body)))
             .timeout(const Duration(seconds: 15));
-      } on Exception {
+      } on Exception catch (error) {
         if (base == jupiterViaZandr) {
           _fallbackUntil = DateTime.now().add(const Duration(minutes: 10));
+          continue;
+        }
+        // With public services there's nowhere else to go: a dropped connection is tried twice more.
+        if (public && error is! TimeoutException && dropped++ < 2) {
+          await Future<void>.delayed(Duration(milliseconds: 500 * dropped));
           continue;
         }
         throw const ServiceError(ServiceFailure.unreachable, 'tokens');
@@ -190,7 +249,7 @@ class Jupiter {
       if (body is! List) throw const ServiceError(ServiceFailure.badResponse, 'tokens');
       final result = <String, TokenInfo>{};
       for (final token in body) {
-        if (token is Map && token['id'] is String && batch.contains(token['id'])) result[token['id'] as String] = parseToken(token.cast());
+        if (token is Map && token['id'] is String && batch.contains(token['id'])) result[token['id'] as String] = parseToken(token.cast(), public: _direct);
       }
       for (final mint in batch) {
         _infos[mint] = _Cached(result[mint], const Duration(hours: 1));
@@ -238,7 +297,7 @@ class Jupiter {
     final found = <TokenListing>[];
     for (final token in body) {
       if (token is! Map || token['id'] is! String || !_mint.hasMatch(token['id'] as String)) continue;
-      final info = parseToken(token.cast());
+      final info = parseToken(token.cast(), public: _direct);
       _infos[token['id'] as String] = _Cached(info, const Duration(hours: 1));
       found.add(TokenListing(token['id'] as String, info));
     }

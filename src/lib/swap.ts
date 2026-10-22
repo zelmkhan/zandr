@@ -8,6 +8,7 @@
 import { base58, base64 } from '@scure/base';
 import { getApi, rpcEndpoints } from '@/lib/api';
 import type { PortfolioEntry, ResponseMap, SwapFailure, SwapQuoteView, SwapReview } from '@/lib/messages';
+import { portfolioKey } from '@/lib/portfolio';
 import { loadPreferences } from '@/lib/preferences';
 import { signMessage } from '@/lib/secrets';
 import { trackSent } from '@/lib/sent';
@@ -164,7 +165,7 @@ async function feeOf(from: string, build: SwapBuild, input: Mint): Promise<bigin
   if (!FEE_WALLET) return 0n;
   if (build.inputMint === WRAPPED_SOL) return (BigInt(build.inAmount) * FEE_BPS) / 10_000n;
   if (build.outputMint === WRAPPED_SOL) return (BigInt(build.outAmount) * FEE_BPS) / 10_000n;
-  const key = `portfolio:mainnet:${from}`;
+  const key = portfolioKey(await loadPreferences(), 'mainnet', from);
   const coins = ((await browser.storage.session.get(key))[key] as PortfolioEntry | undefined)?.portfolio?.coins ?? [];
   const sol = coins.find((coin) => coin.native)?.price;
   const token = coins.find((coin) => !coin.native && coin.mint === build.inputMint)?.price;

@@ -1,4 +1,5 @@
 // JSON-RPC calls to the Solana node the wallet sends through. Background only.
+import { fetchNode } from '@/lib/network';
 
 // Why a call failed: the node refused it, limited it, couldn't be reached, or answered with an
 // error of its own (`detail` has its message).
@@ -30,7 +31,8 @@ export async function rpc<T>(url: string, method: string, params: unknown[]): Pr
 async function call<T>(url: string, method: string, params: unknown[]): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(url, {
+    // zandr's node with the public one standing in for it while it can't answer.
+    response = await fetchNode(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),

@@ -13,6 +13,11 @@ import { peekSession, readCached, writeCached } from '@/lib/vault';
 // Older than this, asking for the coins also refreshes them.
 const FRESH_MS = 20_000;
 
+// Where a wallet's coins are kept, per network; apart for public services, whose logos come from
+// elsewhere.
+export const portfolioKey = (preferences: Preferences, network: Network, address: string) =>
+  `portfolio:${network}${preferences.publicServices ? '-public' : ''}:${address}`;
+
 async function readEntry(key: string): Promise<PortfolioEntry | null> {
   const stored = await browser.storage.session.get(key);
   return (stored[key] as PortfolioEntry | undefined) ?? null;
@@ -76,7 +81,7 @@ async function fetchAndStore(key: string, network: Network, address: string, pre
 export async function refreshPortfolio(network: Network, address: string, slot?: number) {
   const preferences = await loadPreferences();
   if (preferences.network !== network) return;
-  await refresh(`portfolio:${network}:${address}`, network, address, preferences, slot === undefined ? undefined : { slot });
+  await refresh(portfolioKey(preferences, network, address), network, address, preferences, slot === undefined ? undefined : { slot });
 }
 
 // What's cached for this wallet on the chosen network, right away; a refresh starts if that's
@@ -84,7 +89,7 @@ export async function refreshPortfolio(network: Network, address: string, slot?:
 export async function getPortfolio(address: string, force = false) {
   const preferences = await loadPreferences();
   const { network } = preferences;
-  const key = `portfolio:${network}:${address}`;
+  const key = portfolioKey(preferences, network, address);
   let entry = await readEntry(key);
   // Just unlocked (or switched to): what was last fetched, from before, while fresh coins load.
   if (!entry) {

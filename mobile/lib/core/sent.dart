@@ -54,7 +54,7 @@ Future<Settled?> followSent(Rpc rpc, String signature, Pending pending, {Future<
   // The socket: the node says the moment it's processed.
   WebSocketChannel? socket;
   try {
-    socket = WebSocketChannel.connect(Uri.parse(socketUrl(rpc.url)));
+    socket = WebSocketChannel.connect(Uri.parse(socketUrl(rpc.endpoint)));
     socket.sink.add(jsonEncode({
       'jsonrpc': '2.0', 'id': 1, 'method': 'signatureSubscribe',
       'params': [signature, {'commitment': 'processed'}],

@@ -6,6 +6,7 @@ import 'package:zandr/app/preferences.dart';
 import 'package:zandr/app/store.dart';
 import 'package:zandr/app/vault.dart';
 import 'package:zandr/app/wallet.dart';
+import 'package:zandr/core/config.dart';
 import 'package:zandr/core/secrets.dart';
 import 'package:zandr/core/send.dart' show Protection;
 import 'package:zandr/ui/app.dart';
@@ -48,6 +49,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(on(), isTrue);
     state.vault.lock();
+  });
+
+  testWidgets('mainnet\'s node: Private, Public or Custom; devnet\'s has no Public', (tester) async {
+    final state = AppState(MemoryStore(), MemoryPreferences(), live: false);
+    await tester.runAsync(state.start);
+    await tester.pumpWidget(AppScope(state: state, child: MaterialApp(theme: themeFor(Palette.dark), home: const SettingsScreen())));
+    expect(find.text('Mainnet · Zandr\'s node'), findsOneWidget);
+    await tester.tap(find.text('Network'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Public'));
+    await tester.pumpAndSettle();
+    expect(state.preferences.publicServices, isTrue);
+    expect(state.preferences.rpcUrl(Network.mainnet), publicRpcMainnet);
+    expect(find.text('Public services'), findsOneWidget);
+    await tester.tap(find.text('Devnet'));
+    await tester.pumpAndSettle();
+    expect(find.text('Public'), findsNothing);
+    // Devnet's choice leaves mainnet's public services on.
+    await tester.tap(find.text('Default'));
+    await tester.pumpAndSettle();
+    expect(state.preferences.publicServices, isTrue);
+    await tester.tap(find.text('Mainnet'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Private'));
+    await tester.pumpAndSettle();
+    expect(state.preferences.publicServices, isFalse);
+    expect(state.preferences.rpcUrl(Network.mainnet), defaultRpc[Network.mainnet]);
+    // The connection checks the screen started finish before the test does.
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
   });
 
   testWidgets('a page that fits doesn\'t bounce under the finger', (tester) async {

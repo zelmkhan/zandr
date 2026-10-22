@@ -185,7 +185,8 @@ async function plan(intent: SendIntent, maxFee: bigint | null): Promise<Plan> {
     const api = getApi(preferences);
     const found = await within(api.getTransferCheck({ network, to, mint }), EXCHANGE_WAIT_MS).catch(() => null);
     if (found === null) return 'unknown';
-    if (found.exchange && found.kind === 'deposit' && found.listed === null && (await refreshExchangeTokens(LIST_RETRY_MS))) {
+    // With public services, the lists come only every 12 hours, as the alarm fetches them.
+    if (found.exchange && found.kind === 'deposit' && found.listed === null && !preferences.publicServices && (await refreshExchangeTokens(LIST_RETRY_MS))) {
       return api.getTransferCheck({ network, to, mint }).catch(() => found);
     }
     return found;

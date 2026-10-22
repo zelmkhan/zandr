@@ -38,7 +38,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // One connection pool for every request: see net.dart.
   final http.Client client;
   late final ExchangeLists exchangeLists = ExchangeLists(preferenceStore, client);
-  late final Jupiter jupiter = Jupiter(client);
+  late final _jupiterViaZandr = Jupiter(client);
+  late final _jupiterPublic = Jupiter.publicApi(client);
+  Jupiter get jupiter => preferences.publicServices ? _jupiterPublic : _jupiterViaZandr;
 
   AppState(this.store, this.preferenceStore, {Vault? vault, this.live = true, http.Client? client}) : _vault = vault, client = client ?? appHttpClient();
 
@@ -119,7 +121,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     } else if (front) {
       final away = _awaySince;
       _awaySince = null;
-      if (away != null) _warm();
+      if (away != null) {
+        _warm();
+        // The exchanges' lists, if 12 hours have passed: the app may stay open for days.
+        exchangeLists.refresh().ignore();
+      }
       if (phase == Phase.unlocked && away != null && DateTime.now().difference(away) >= _autoLock) {
         lock();
       } else if (phase == Phase.unlocked) {
@@ -147,13 +153,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // The last balances of each wallet on each network (the few most recent), from the sealed cache:
-  // shown at once on unlock or switching, then refreshed.
+  // shown at once on unlock or switching, then refreshed. Kept apart for public services, whose
+  // logos come from elsewhere.
   Map<String, Object?> _cache = {};
   static const _cacheLimit = 8;
-  String _cacheKey(String address, Network network) => '${network.name}:$address';
+  String _cacheKey(String address, Network network, Jupiter jupiter) => '${network.name}${jupiter.public ? '-public' : ''}:$address';
 
-  void _remember(Portfolio fresh) {
-    final key = _cacheKey(fresh.address, fresh.network);
+  void _remember(Portfolio fresh, Jupiter jupiter) {
+    final key = _cacheKey(fresh.address, fresh.network, jupiter);
     _cache
       ..remove(key)
       ..[key] = fresh.toJson();
@@ -198,7 +205,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> setPreferences(Preferences next) async {
-    final networkChanged = next.network != preferences.network || next.rpcUrl(next.network) != preferences.rpcUrl(preferences.network);
+    final networkChanged = next.network != preferences.network ||
+        next.rpcUrl(next.network) != preferences.rpcUrl(preferences.network) ||
+        next.publicServices != preferences.publicServices;
     await preferenceStore.save(next);
     preferences = next;
     if (networkChanged && phase == Phase.unlocked) {
@@ -231,7 +240,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   void _walletChanged() {
     final wallet = active;
-    final cached = wallet == null ? null : _cache[_cacheKey(wallet.address, network)];
+    final cached = wallet == null ? null : _cache[_cacheKey(wallet.address, network, jupiter)];
     portfolio = null;
     if (cached is Map) {
       try {
@@ -254,7 +263,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _live?.stop();
     final wallet = active;
     if (wallet == null || !live) return;
-    _live = LiveWatch(wallet.address, preferences.rpcUrl(network), (slot) {
+    _live = LiveWatch(wallet.address, () => rpc.endpoint, (slot) {
       refreshPortfolio(minContextSlot: slot);
       if (slot != null && activityLoaded) refreshActivity();
     });
@@ -281,6 +290,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       refreshing = true;
       notifyListeners();
       final network = this.network;
+      final jupiter = this.jupiter;
       try {
         Portfolio fresh;
         try {
@@ -291,10 +301,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           await Future<void>.delayed(const Duration(milliseconds: 400));
           fresh = await getPortfolio(rpc, jupiter, network, wallet.address, known: _knownMints(wallet.address, network));
         }
-        if (active?.address == wallet.address && this.network == network) {
+        if (active?.address == wallet.address && this.network == network && this.jupiter == jupiter) {
           portfolio = fresh;
           portfolioError = null;
-          _remember(fresh);
+          _remember(fresh, jupiter);
         }
       } catch (error) {
         if (active?.address == wallet.address) portfolioError = error;
@@ -365,14 +375,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         network: network,
         jupiter: jupiter,
         exchanges: await _exchangesNow(),
-        refreshLists: () => exchangeLists.refresh(const Duration(minutes: 10)),
+        // At a transfer to an exchange with no list, fresh ones are asked for (at most every 10
+        // minutes); with public services, only every 12 hours, as always.
+        refreshLists: preferences.publicServices ? null : () => exchangeLists.refresh(const Duration(minutes: 10)),
         enabled: preferences.protections,
         known: await known(),
       );
 
   // One per node, so what it learns of tokens (their decimals and programs) is kept between quotes.
   Swapper? _swapper;
-  Swapper swapper() => _swapper?.rpc == rpc ? _swapper! : _swapper = Swapper(rpc, jupiter, () => portfolio);
+  Swapper swapper() => _swapper?.rpc == rpc && _swapper?.jupiter == jupiter ? _swapper! : _swapper = Swapper(rpc, jupiter, () => portfolio);
   Reclaimer reclaimer() => Reclaimer(rpc, jupiter, network);
 
   Future<Uint8List> sign(Uint8List message) async {

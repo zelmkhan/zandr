@@ -121,7 +121,7 @@ export type SendCheck =
   // A deposit address of an exchange that doesn't accept this token on Solana (`basis` "deposits",
   // by its own list) or doesn't trade it at all ("trading", by CoinGecko).
   | { id: 'exchangeToken'; exchange: string; basis: 'deposits' | 'trading' }
-  // The exchange isn't taking deposits of this token now (by its list from the last two days).
+  // The exchange isn't taking deposits of this token (by its latest list).
   | { id: 'exchangePaused'; exchange: string; coin: string | null }
   // Less than the exchange credits: its minimum deposit, in whole tokens, and its name for the token.
   | { id: 'exchangeMinimum'; exchange: string; minimum: string; coin: string | null };

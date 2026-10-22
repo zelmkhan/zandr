@@ -90,6 +90,22 @@ const protectionInfo = <Protection, ProtectionInfo>{
 
 String _networkName(Network network) => network == Network.mainnet ? 'Mainnet' : 'Devnet';
 
+// The node a network is reached through: the default one (zandr's on mainnet, Solana's on devnet),
+// public services (mainnet only), or one the user set.
+enum _Node { standard, public, custom }
+
+_Node _nodeOf(Preferences prefs, Network network) => prefs.rpc[network] != null
+    ? _Node.custom
+    : network == Network.mainnet && prefs.publicServices
+        ? _Node.public
+        : _Node.standard;
+
+String _nodeName(_Node node, Network network) => switch (node) {
+  _Node.standard => network == Network.mainnet ? 'Zandr\'s node' : 'Solana\'s node',
+  _Node.public => 'Public services',
+  _Node.custom => 'Your node',
+};
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -110,7 +126,7 @@ class SettingsScreen extends StatelessWidget {
               ThemeChoice.light => 'Light theme',
               ThemeChoice.system => 'Theme as the iPhone\'s',
             }, () => push(context, const _GeneralPage())),
-            _NavRow(ZIcons.network, 'Network', '${_networkName(prefs.network)} · ${prefs.rpc[prefs.network] == null ? 'Zandr\'s node' : 'your node'}', () => push(context, const _NetworkPage())),
+            _NavRow(ZIcons.network, 'Network', '${_networkName(prefs.network)} · ${_nodeName(_nodeOf(prefs, prefs.network), prefs.network)}', () => push(context, const _NetworkPage())),
             _NavRow(ZIcons.lock, 'Security', on == Protection.values.length ? 'All protections on' : '$on of ${Protection.values.length} protections on', () => push(context, const _SecurityPage())),
             _NavRow(ZIcons.info, 'About', 'Version $appVersion', () => push(context, const _AboutPage())),
           ]),
@@ -208,9 +224,11 @@ class _NetworkPageState extends State<_NetworkPage> {
       }
     } catch (error) {
       if (mounted && _checkedUrl == url) {
+        // Zandr's node: Helius's public one stands in while it can't answer.
+        final standIn = url == defaultRpc[Network.mainnet];
         setState(() {
           _check = _Check.failed;
-          _failure = _failureText(error, forStatus: true);
+          _failure = '${_failureText(error, forStatus: true)}${standIn ? ' · Helius\'s public node stands in' : ''}';
         });
       }
     }
@@ -240,7 +258,8 @@ class _NetworkPageState extends State<_NetworkPage> {
         setState(() => _error = probe.network == null ? 'This node isn\'t on Solana ${_networkName(network)}.' : 'This node is on ${_networkName(probe.network!)}, not ${_networkName(network)}.');
         return;
       }
-      await state.setPreferences(state.preferences.copyWith(rpc: {...state.preferences.rpc, network: url}));
+      // Your own node in place of public services, so Jupiter goes through zandr's server again.
+      await state.setPreferences(state.preferences.copyWith(rpc: {...state.preferences.rpc, network: url}, publicServices: network == Network.mainnet ? false : null));
       HapticFeedback.lightImpact();
       setState(() {
         _editing = false;
@@ -262,6 +281,7 @@ class _NetworkPageState extends State<_NetworkPage> {
     final prefs = state.preferences;
     final network = state.network;
     final custom = prefs.rpc[network];
+    final node = _editing ? _Node.custom : _nodeOf(prefs, network);
     final endpoint = prefs.rpcUrl(network);
     final shown = _checkedUrl == endpoint ? _check : null;
     return _Page(
@@ -286,14 +306,23 @@ class _NetworkPageState extends State<_NetworkPage> {
         ]),
         _GroupTitle('Node for ${_networkName(network)}'),
         _Card([
-          _ChoiceRow<bool>(
-            custom == null && !_editing ? 'Zandr\'s node' : 'Your node',
-            custom ?? (network == Network.mainnet ? 'Run by Zandr, which keeps no record of who asks what.' : endpoint),
-            options: const [false, true],
-            value: custom != null || _editing,
-            label: (mine) => mine ? 'Custom' : 'Default',
-            onChanged: (mine) {
-              if (mine) {
+          _ChoiceRow<_Node>(
+            _nodeName(node, network),
+            switch (node) {
+              _Node.standard => network == Network.mainnet ? 'Run by Zandr, which keeps no record of who asks what.' : endpoint,
+              _Node.public => 'Helius\'s node, with Jupiter for prices and swaps, asked directly. Nothing goes through Zandr\'s server.',
+              _Node.custom => custom ?? 'Any Solana ${_networkName(network)} node, by its URL.',
+            },
+            options: network == Network.mainnet ? _Node.values : const [_Node.standard, _Node.custom],
+            value: node,
+            label: (node) => switch (node) {
+              // Zandr's node keeps no record of who asks what; devnet's default is Solana's public one.
+              _Node.standard => network == Network.mainnet ? 'Private' : 'Default',
+              _Node.public => 'Public',
+              _Node.custom => 'Custom',
+            },
+            onChanged: (next) {
+              if (next == _Node.custom) {
                 setState(() {
                   _editing = true;
                   _draft.text = custom ?? '';
@@ -304,7 +333,8 @@ class _NetworkPageState extends State<_NetworkPage> {
                   _editing = false;
                   _error = null;
                 });
-                _set(prefs.copyWith(rpc: {...prefs.rpc}..remove(network)));
+                // Public services are mainnet's: devnet's choice leaves them as they are.
+                _set(prefs.copyWith(rpc: {...prefs.rpc}..remove(network), publicServices: network == Network.mainnet ? next == _Node.public : null));
               }
             },
           ),

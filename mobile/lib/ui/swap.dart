@@ -70,9 +70,10 @@ class _SwapScreenState extends State<SwapScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    final sol = AppScope.read(context).portfolio?.coins.firstOrNull;
-    _pay = sol == null ? const _Side(wrappedSol, symbol: 'SOL', name: 'Solana', verified: true, logo: '$logoServer/$wrappedSol') : _Side.ofCoin(sol);
-    _receive = const _Side(usdcMint, symbol: 'USDC', name: 'USD Coin', verified: true, logo: '$logoServer/$usdcMint');
+    final state = AppScope.read(context);
+    final sol = state.portfolio?.coins.firstOrNull;
+    _pay = sol == null ? _Side(wrappedSol, symbol: 'SOL', name: 'Solana', verified: true, logo: state.jupiter.logo(wrappedSol)) : _Side.ofCoin(sol);
+    _receive = _Side(usdcMint, symbol: 'USDC', name: 'USD Coin', verified: true, logo: state.jupiter.logo(usdcMint));
     // Ready by the time a price comes back for an amount.
     _priceOf(_receive);
     if (widget.preview case final quote?) {

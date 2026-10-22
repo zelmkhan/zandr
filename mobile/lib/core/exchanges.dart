@@ -144,7 +144,8 @@ class ExchangeVerdict {
   // False when the list is complete and the token isn't on it.
   final bool accepted;
   final String? coin, depositMin;
-  // Deposits of it were paused when a recent list was fetched.
+  // Deposits of it were paused when the list was fetched, however long ago: the protection stops the
+  // transfer, and turning it off is the user's call.
   final bool paused;
   // deposits: the tokens it takes on Solana; trading: (from CoinGecko) the ones it trades.
   final String basis;
@@ -154,22 +155,22 @@ class ExchangeVerdict {
 const _day = Duration(days: 1);
 // A list this old may miss tokens the exchange has added since.
 const _trustedFor = Duration(days: 60);
-// A pause is told only from a list this recent: deposits reopen.
-const _pauseFresh = Duration(days: 2);
 // CoinGecko often files an exchange's markets in these under the fiat they track.
 const _stablecoins = {'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'};
 
-// Null when there's no list for the exchange, or it's too old to go by.
+// Null when there's no list for the exchange, or it says nothing of the token. However old the
+// list, a token on it keeps its pause and minimum; only past _trustedFor does a token missing from
+// it no longer count as not taken.
 ExchangeVerdict? exchangeVerdict(List<ExchangeTokenList> lists, String exchange, String? mint, {DateTime? now}) {
   final list = lists.where((entry) => entry.exchange == exchange).firstOrNull;
   if (list == null) return null;
   final age = (now ?? DateTime.now()).difference(list.fetchedAt);
-  if (age < -_day || age > _trustedFor) return null;
+  if (age < -_day) return null;
   final token = list.tokens.where((entry) => entry.mint == mint).firstOrNull;
   final basis = list.matchedBy == 'coingecko' ? 'trading' : 'deposits';
   if (token == null && basis == 'trading' && mint != null && _stablecoins.contains(mint)) return null;
-  if (token == null) return list.complete ? ExchangeVerdict(accepted: false, paused: false, basis: basis) : null;
-  return ExchangeVerdict(accepted: true, coin: token.coin, depositMin: token.depositMin, paused: !token.deposit && age <= _pauseFresh, basis: basis);
+  if (token == null) return list.complete && age <= _trustedFor ? ExchangeVerdict(accepted: false, paused: false, basis: basis) : null;
+  return ExchangeVerdict(accepted: true, coin: token.coin, depositMin: token.depositMin, paused: !token.deposit, basis: basis);
 }
 
 enum ExchangeKind { hotWallet, deposit }

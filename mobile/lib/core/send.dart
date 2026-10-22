@@ -406,7 +406,7 @@ class Sender {
     BigInt? rent;
 
     if (mint == null) {
-      coin = const SendCoin(symbol: 'SOL', name: 'Solana', logo: '$logoServer/$wrappedSol', decimals: 9);
+      coin = SendCoin(symbol: 'SOL', name: 'Solana', logo: jupiter.logo(wrappedSol), decimals: 9);
       units = _solUnits;
       price = priceFor(units);
       final fee = _feeFor(units, price);

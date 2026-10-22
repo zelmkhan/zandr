@@ -73,7 +73,7 @@ export async function getPortfolio(
     balance: solBalance,
     name: 'Solana',
     symbol: 'SOL',
-    logo: deps.jupiter.logoOf(WRAPPED_SOL) ?? SOL_LOGO,
+    logo: deps.jupiter.logoOf(WRAPPED_SOL, SOL_LOGO) ?? SOL_LOGO,
     verified: true,
     ...priced(WRAPPED_SOL, solBalance),
   };
@@ -84,7 +84,7 @@ export async function getPortfolio(
     // taken for the SOL itself.
     const wrapped = holding.mint === WRAPPED_SOL;
     const info = wrapped
-      ? { name: 'Wrapped SOL', symbol: 'wSOL', logo: deps.jupiter.logoOf(WRAPPED_SOL) ?? SOL_LOGO, verified: true }
+      ? { name: 'Wrapped SOL', symbol: 'wSOL', logo: deps.jupiter.logoOf(WRAPPED_SOL, SOL_LOGO) ?? SOL_LOGO, verified: true }
       : (infos.get(holding.mint) ?? null);
     tokens.push({
       mint: holding.mint,

@@ -169,17 +169,23 @@ const BORROWED = new Set(
 );
 const plain = (text: string | null) => (text ?? '').normalize('NFKC').toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-// A token's logo, as the wallet shows it. With zandr's logo server (`logos`), every token's comes
-// from there, by mint, unless an unverified token borrows a well-known name: the server fetches
-// the creator's image itself, so the creator never sees who looks at it. Without one, only verified
-// tokens' logos, straight from where they are.
-function logoOf(mint: string, icon: unknown, info: { verified: boolean; symbol: string | null; name: string | null }, logos?: string): string | null {
+// Where logos come from: zandr's logo server (its URL, logos by mint), or an image proxy (a
+// function giving a logo's URL through it from where its creator put it).
+export type Logos = string | ((source: string) => string);
+
+// A token's logo, as the wallet shows it. With zandr's logo server or an image proxy (`logos`),
+// every token's comes from there, unless an unverified token borrows a well-known name: either
+// fetches the creator's image itself, so the creator never sees who looks at it. Without one, only
+// verified tokens' logos, straight from where they are.
+function logoOf(mint: string, icon: unknown, info: { verified: boolean; symbol: string | null; name: string | null }, logos?: Logos): string | null {
   if (!logos) return info.verified ? iconSource(icon) : null;
   if (!info.verified && (BORROWED.has(plain(info.symbol)) || BORROWED.has(plain(info.name)))) return null;
-  return `${logos}/${mint}`;
+  if (typeof logos === 'string') return `${logos}/${mint}`;
+  const source = iconSource(icon);
+  return source ? logos(source) : null;
 }
 
-function parseToken(token: Record<string, unknown> & { id: string }, logos?: string): TokenInfo {
+function parseToken(token: Record<string, unknown> & { id: string }, logos?: Logos): TokenInfo {
   const verified = token.isVerified === true;
   const decimals = token.decimals;
   const name = clean(token.name, 48);
@@ -218,8 +224,9 @@ function base58(bytes: number[]): string {
   return text;
 }
 
-// `logos`: zandr's logo server, as in ApiConfig.
-export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PUBLIC, logos?: string) {
+// `logos`: zandr's logo server or an image proxy, as in ApiConfig; `fallbackLogos`: the logos while
+// requests go to `config.fallback` (zandr's server, its logo server included, can't answer).
+export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PUBLIC, logos?: Logos, fallbackLogos?: Logos) {
   const infos = new TtlCache<TokenInfo | null>(60 * 60 * 1000);
   // Where each token's logo is, as Jupiter has it: for zandr's logo server only, never handed out.
   const icons = new TtlCache<string | null>(60 * 60 * 1000);
@@ -241,6 +248,7 @@ export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PU
   // server without a Jupiter key, or down), the fallback.
   let fallbackUntil = 0;
   const base = () => (config.fallback && Date.now() < fallbackUntil ? config.fallback : config.url);
+  const currentLogos = () => (fallbackLogos && config.fallback && Date.now() < fallbackUntil ? fallbackLogos : logos);
   const withKey = (url: string, init?: RequestInit): RequestInit | undefined =>
     config.key && url === config.url ? { ...init, headers: { ...(init?.headers as Record<string, string> | undefined), 'x-api-key': config.key } } : init;
 
@@ -296,7 +304,7 @@ export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PU
       const result = new Map<string, TokenInfo>();
       for (const token of body) {
         if (!isObject(token) || typeof token.id !== 'string' || !batch.includes(token.id)) continue;
-        result.set(token.id, parseToken({ ...token, id: token.id }, logos));
+        result.set(token.id, parseToken({ ...token, id: token.id }, currentLogos()));
         icons.set(token.id, iconSource(token.icon));
       }
       return result;
@@ -311,9 +319,12 @@ export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PU
       return new Map(mints.map((mint) => [mint, found.get(mint) ? (icons.get(mint) ?? null) : null]));
     },
 
-    // A logo by mint from zandr's logo server, if there's one: for coins Jupiter isn't asked
-    // about, like SOL itself.
-    logoOf: (mint: string): string | null => (logos ? `${logos}/${mint}` : null),
+    // A logo by mint from zandr's logo server, or from where it is (`source`) through the image
+    // proxy, if there's either: for coins Jupiter isn't asked about, like SOL itself.
+    logoOf: (mint: string, source: string): string | null => {
+      const from = currentLogos();
+      return typeof from === 'string' ? `${from}/${mint}` : from ? from(source) : null;
+    },
 
     // Tokens matching a name, symbol or mint, verified ones first. What's found is cached as
     // token info too.
@@ -325,7 +336,7 @@ export function createJupiter(fetcher: Fetch, config: JupiterConfig = JUPITER_PU
       if (!Array.isArray(body)) throw new ApiError('bad-response', 'tokens');
       const found = body.flatMap((token) => {
         if (!isObject(token) || typeof token.id !== 'string' || !MINT.test(token.id)) return [];
-        const info = parseToken({ ...token, id: token.id }, logos);
+        const info = parseToken({ ...token, id: token.id }, currentLogos());
         infos.set(token.id, info);
         icons.set(token.id, iconSource(token.icon));
         return [{ mint: token.id, ...info }];

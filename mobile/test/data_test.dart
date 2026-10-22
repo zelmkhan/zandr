@@ -30,4 +30,22 @@ void main() {
     );
     expect([for (final c in coverage) '${c.name}:${c.status.name}'], ['Binance:full', 'Rollbit:full', 'OKX:traded', 'Kraken:partial', 'Gate:partial', 'Zeta:addresses']);
   });
+
+  test('a paused deposit stops the transfer however old the list; a missing token, only within 60 days', () {
+    final now = DateTime.utc(2026, 10, 1);
+    const paused = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', missing = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
+    List<ExchangeTokenList> listed(int daysOld) => [
+          ExchangeTokenList(
+            exchange: 'Binance', fetchedAt: now.subtract(Duration(days: daysOld)), source: 'test', matchedBy: 'mint', complete: true,
+            tokens: const [ExchangeToken(mint: paused, coin: 'BONK', depositMin: '100', deposit: false)],
+          ),
+        ];
+    for (final days in [1, 5, 90, 400]) {
+      final verdict = exchangeVerdict(listed(days), 'Binance', paused, now: now);
+      expect(verdict?.paused, isTrue, reason: '$days days');
+      expect(verdict?.depositMin, '100', reason: '$days days');
+    }
+    expect(exchangeVerdict(listed(30), 'Binance', missing, now: now)?.accepted, isFalse);
+    expect(exchangeVerdict(listed(90), 'Binance', missing, now: now), isNull);
+  });
 }

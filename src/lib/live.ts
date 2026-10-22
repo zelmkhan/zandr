@@ -7,6 +7,7 @@
 // until the socket is back.
 // Background only.
 import type { Browser } from 'wxt/browser';
+import { nodeFor } from '@/lib/network';
 import type { Network } from '@/server/api';
 import { TOKEN_PROGRAMS } from '@/server/rpc';
 import { rpcEndpoints } from '@/lib/api';
@@ -50,8 +51,9 @@ export function socketUrl(rpc: string): string | null {
   return url.toString();
 }
 
-// Watches one wallet on one network until the returned function is called.
-function watch(network: Network, address: string, url: string | null): () => void {
+// Watches one wallet on one network, through the node at `rpc` (or the one standing in for it, as
+// it is at each connection), until the returned function is called.
+function watch(network: Network, address: string, rpc: string): () => void {
   const requests = subscriptions(address);
   let socket: WebSocket | null = null;
   let live = false;
@@ -70,6 +72,7 @@ function watch(network: Network, address: string, url: string | null): () => voi
   }, POLL_MS);
 
   function connect() {
+    const url = socketUrl(nodeFor(rpc));
     if (!url) return;
     subscribed = 0;
     try {
@@ -149,7 +152,8 @@ function watch(network: Network, address: string, url: string | null): () => voi
   };
 }
 
-type Watched = { network: Network; address: string; url: string | null; views: number; stop: () => void };
+// `url`: the RPC endpoint watched through.
+type Watched = { network: Network; address: string; url: string; views: number; stop: () => void };
 const watched = new Map<string, Watched>();
 
 // A view showing a wallet holds a port named LIVE_PORT for as long as it does: the active wallet
@@ -176,7 +180,7 @@ export function holdLive(port: Browser.runtime.Port) {
       current.views++;
       return;
     }
-    const url = socketUrl(rpcEndpoints(preferences)[network]);
+    const url = rpcEndpoints(preferences)[network];
     watched.set(key, { network, address: account.address, url, views: 1, stop: watch(network, account.address, url) });
   })();
 }
@@ -192,7 +196,7 @@ function release(key: string) {
 export async function rewatch() {
   const preferences = await loadPreferences();
   for (const current of watched.values()) {
-    const url = socketUrl(rpcEndpoints(preferences)[current.network]);
+    const url = rpcEndpoints(preferences)[current.network];
     if (url === current.url) continue;
     current.stop();
     current.url = url;

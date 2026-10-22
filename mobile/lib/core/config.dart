@@ -35,5 +35,15 @@ const logoServer = '$zandrApi/v1/logo';
 const jupiterViaZandr = '$zandrApi/jupiter';
 const jupiterPublic = 'https://lite-api.jup.ag';
 
+// Public services, for those who'd rather nothing about their wallet went through zandr's server:
+// Helius's mainnet node under a key meant to be public, Jupiter's keyless API, and logos through
+// wsrv.nl, an open image proxy (so a token's creator still never sees who looks). Only the
+// exchanges' token lists still come from zandr's server, fetched whole, so it learns nothing.
+const publicRpcMainnet = 'https://mainnet.helius-rpc.com/?api-key=c987b612-49bb-4f4d-b716-cf82ae436e53';
+// Sized for the largest logo the app shows (56 points) on a 3x screen; SVGs come back as PNGs.
+// Should the source fail, wsrv.nl redirects to `fallback`.
+String proxiedLogo(String source, {String? fallback}) =>
+    'https://wsrv.nl/?url=${Uri.encodeComponent(source)}&w=192&h=192&output=png${fallback == null ? '' : '&default=${Uri.encodeComponent(fallback)}'}';
+
 String explorerTransaction(String signature, Network network) =>
     'https://solscan.io/tx/$signature${network == Network.devnet ? '?cluster=devnet' : ''}';

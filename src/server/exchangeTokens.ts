@@ -35,7 +35,8 @@ export type ExchangeVerdict = {
   accepted: boolean;
   coin: string | null;
   depositMin: string | null;
-  // Deposits of it were paused when a recent list was fetched.
+  // Deposits of it were paused when the list was fetched, however long ago: the protection stops the
+  // transfer, and turning it off is the user's call.
   paused: boolean;
   // What the list is of: the tokens the exchange takes on Solana, or (from CoinGecko) the ones it trades.
   basis: 'deposits' | 'trading';
@@ -44,8 +45,6 @@ export type ExchangeVerdict = {
 const DAY = 24 * 60 * 60 * 1000;
 // A list this old may miss tokens the exchange has added since: it no longer says what isn't taken.
 const TRUSTED_FOR = 60 * DAY;
-// A pause is told only from a list this recent: deposits reopen.
-const PAUSE_FRESH = 2 * DAY;
 
 // CoinGecko often files an exchange's markets in these under the fiat they track: a list from it
 // that lacks one says nothing about it.
@@ -59,18 +58,19 @@ function age(list: ExchangeTokenList, now: number): number {
   return Number.isFinite(fetched) ? now - fetched : Infinity;
 }
 
-// What the exchange's list says about a token, or null when there's no list for the exchange or
-// it's too old to go by.
+// What the exchange's list says about a token, or null when there's no list for the exchange or it
+// says nothing of the token. However old the list, a token on it keeps its pause and minimum;
+// only past TRUSTED_FOR does a token missing from it no longer count as not taken.
 export function exchangeVerdict(lists: ExchangeTokenList[], exchange: string, mint: string | null, now = Date.now()): ExchangeVerdict | null {
   const list = lists.find((entry) => entry.exchange === exchange);
   if (!list) return null;
   const old = age(list, now);
-  if (!(old >= -DAY && old <= TRUSTED_FOR)) return null;
+  if (!Number.isFinite(old) || old < -DAY) return null;
   const token = list.tokens.find((entry) => entry.mint === mint) ?? null;
   const basis = list.matchedBy === 'coingecko' ? 'trading' : 'deposits';
   if (!token && basis === 'trading' && mint !== null && STABLECOINS.has(mint)) return null;
-  if (!token) return list.complete ? { accepted: false, coin: null, depositMin: null, paused: false, basis } : null;
-  return { accepted: true, coin: token.coin, depositMin: token.depositMin, paused: !token.deposit && old <= PAUSE_FRESH, basis };
+  if (!token) return list.complete && old <= TRUSTED_FOR ? { accepted: false, coin: null, depositMin: null, paused: false, basis } : null;
+  return { accepted: true, coin: token.coin, depositMin: token.depositMin, paused: !token.deposit, basis };
 }
 
 // Per exchange, the newer of two sets of lists: the snapshot that ships and a fetched one. A

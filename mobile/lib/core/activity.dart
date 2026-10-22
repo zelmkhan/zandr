@@ -219,7 +219,7 @@ Future<ActivityPage> getActivity(Rpc rpc, Jupiter jupiter, Network network, Stri
             for (final move in reading.moves)
               () {
                 final amount = '${move.delta.isNegative ? '-' : '+'}${formatUnits(move.delta.abs(), move.decimals)}';
-                if (move.mint == null) return ActivityChange(amount: amount, symbol: 'SOL', logo: '$logoServer/$wrappedSol', verified: true);
+                if (move.mint == null) return ActivityChange(amount: amount, symbol: 'SOL', logo: jupiter.logo(wrappedSol), verified: true);
                 final info = infos[move.mint];
                 return ActivityChange(mint: move.mint, amount: amount, symbol: info?.symbol, logo: info?.logo, verified: info?.verified ?? false);
               }(),
