@@ -1,0 +1,51 @@
+name: zandr
+description: "Zandr: a Solana wallet that stops mistakes before they cost you."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  cryptography: ^2.9.0
+  cryptography_flutter: ^2.3.4
+  pointycastle: ^4.0.0
+  flutter_secure_storage: ^11.2.0
+  local_auth: ^3.0.2
+  http: ^1.6.0
+  web_socket_channel: ^3.0.3
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.2
+  shared_preferences: ^2.5.5
+  unorm_dart: ^0.3.3
+  url_launcher: ^6.3.2
+  intl: ^0.20.3
+  cupertino_http: ^3.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/OFL.txt
+    # The mark from the app icon, light on transparent: shown while Zandr starts and unlocks.
+    - assets/images/mark.png
+    # The exchanges' logos, as the extension shows them; NOTICE.md has where each comes from.
+    - assets/exchanges/
+    # Shared with the extension (src/server); test/data_test.dart keeps them the same.
+    - assets/data/exchangeWallets.json
+    - assets/data/exchangeTokens.json
+
+  # Geist, as the extension and the site use it (SIL Open Font License, assets/fonts/OFL.txt).
+  fonts:
+    - family: Geist
+      fonts:
+        - asset: assets/fonts/Geist.ttf
